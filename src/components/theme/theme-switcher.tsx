@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Laptop, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -24,11 +24,11 @@ const themes = [
 
 export function ThemeSwitcher() {
   const { theme, resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   if (!mounted) {
     return <div className="h-9 w-26 rounded-lg" aria-hidden="true" />;
@@ -52,9 +52,7 @@ export function ThemeSwitcher() {
         ? "translate-x-8"
         : "translate-x-16";
 
-  const mobileIndicatorPosition = isDark
-    ? "translate-x-0"
-    : "translate-x-7";
+  const mobileIndicatorPosition = isDark ? "translate-x-0" : "translate-x-7";
 
   return (
     <div className="flex items-center">
@@ -108,11 +106,7 @@ export function ThemeSwitcher() {
         <span
           className={`flex size-7 items-center justify-center rounded-full bg-background shadow-sm transition-transform duration-300 ease-out ${mobileIndicatorPosition}`}
         >
-          {isDark ? (
-            <Moon className="size-4" />
-          ) : (
-            <Sun className="size-4" />
-          )}
+          {isDark ? <Moon className="size-4" /> : <Sun className="size-4" />}
         </span>
       </button>
     </div>
