@@ -1,0 +1,14 @@
+export type SignUpState = {
+  success: boolean;
+  message: string | null;
+  fieldErrors?: {
+    email?: string[];
+    password?: string[];
+    confirmPassword?: string[];
+  };
+};
+
+export const initialSignUpState: SignUpState = {
+  success: false,
+  message: null,
+};
