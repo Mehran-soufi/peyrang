@@ -11,29 +11,38 @@ export function SearchTrigger() {
         <button
           type="button"
           className="
-            hidden
-            h-10
-            w-64
+            flex
+            h-11
+            w-full
             items-center
-            gap-2
+            gap-3
             rounded-xl
             border
             border-border/60
-            bg-background/60
-            px-3
+            bg-background/65
+            px-3.5
             text-sm
             text-muted-foreground
+            shadow-sm
             backdrop-blur-sm
             transition-all
             hover:border-primary/30
             hover:bg-background
             hover:text-foreground
-            lg:flex
+            focus-visible:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-primary/30
+            sm:h-10
+            sm:w-64
+            sm:px-3
+            lg:w-72
           "
         >
           <Search className="size-4 shrink-0" />
 
-          <span>جستجوی کتاب، نویسنده...</span>
+          <span className="truncate">
+            جستجوی کتاب، نویسنده...
+          </span>
         </button>
       }
     />

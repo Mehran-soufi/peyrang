@@ -17,7 +17,7 @@ export function HeaderSearch() {
     }
 
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
+      setIsScrolled(window.scrollY > 30);
     };
 
     handleScroll();

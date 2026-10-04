@@ -1,9 +1,9 @@
-import { ThemeSwitcher } from "@/components/theme/theme-switcher";
+import { Hero } from "@/components/home/hero";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen items-center justify-center">
-      <ThemeSwitcher />
+      <Hero/>
     </main>
   );
 }
