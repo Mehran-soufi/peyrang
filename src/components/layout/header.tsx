@@ -1,12 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { LogIn } from "lucide-react";
 
 import { SearchTrigger } from "@/components/layout/search-trigger";
 import { ThemeSwitcher } from "@/components/theme/theme-switcher";
 import { signOut } from "@/features/auth/actions/sign-out";
-import Image from "next/image";
 
 type HeaderProps = {
   isAuthenticated: boolean;
@@ -14,8 +14,13 @@ type HeaderProps = {
   isScrolled: boolean;
 };
 
-export function Header({ isAuthenticated, isHome, isScrolled }: HeaderProps) {
+export function Header({
+  isAuthenticated,
+  isHome,
+  isScrolled,
+}: HeaderProps) {
   const isTransparent = isHome && !isScrolled;
+  const isSearchVisible = !isHome || isScrolled;
 
   return (
     <header
@@ -29,20 +34,10 @@ export function Header({ isAuthenticated, isHome, isScrolled }: HeaderProps) {
         }
       `}
     >
-      <div
-        className="
-          mx-auto w-[95%]
-          px-4 sm:px-6
-        "
-      >
+      <div className="mx-auto w-[95%] px-4 sm:px-6">
         {/* Desktop Header */}
-        <div
-          className="
-            hidden h-18
-            items-center gap-3
-            sm:flex
-          "
-        >
+        <div className="hidden h-18 items-center gap-3 sm:flex">
+          {/* Logo */}
           <Link
             href="/"
             aria-label="پی‌رنگ"
@@ -64,10 +59,24 @@ export function Header({ isAuthenticated, isHome, isScrolled }: HeaderProps) {
             />
           </Link>
 
+          {/* Search Area */}
           <div className="min-w-0 flex-1 px-3 lg:px-8">
-            <SearchTrigger />
+            <div
+              className={`
+                w-full
+                transition-all duration-300 ease-out
+                ${
+                  isSearchVisible
+                    ? "opacity-100"
+                    : "pointer-events-none opacity-0"
+                }
+              `}
+            >
+              <SearchTrigger />
+            </div>
           </div>
 
+          {/* Actions */}
           <div className="flex shrink-0 items-center gap-1.5">
             <ThemeSwitcher />
 
@@ -104,7 +113,7 @@ export function Header({ isAuthenticated, isHome, isScrolled }: HeaderProps) {
               <Link
                 href="/login"
                 className="
-                  inline-flex h-10  items-center gap-2
+                  inline-flex h-10 items-center gap-2
                   rounded-xl
                   border border-primary/25
                   bg-primary/10
@@ -140,8 +149,13 @@ export function Header({ isAuthenticated, isHome, isScrolled }: HeaderProps) {
           <Link
             href="/"
             aria-label="پی‌رنگ"
-            className="group flex items-center gap-2 rounded-xl outline-none transition-opacity
-           hover:opacity-85 focus-visible:ring-2 focus-visible:ring-primary/40"
+            className="
+              group flex items-center gap-2 rounded-xl
+              outline-none transition-opacity
+              hover:opacity-85
+              focus-visible:ring-2
+              focus-visible:ring-primary/40
+            "
           >
             <Image
               src="/assets/logo/logo.png"

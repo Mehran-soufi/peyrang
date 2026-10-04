@@ -162,16 +162,8 @@ export function SearchDialog({ trigger }: SearchDialogProps) {
               }}
               placeholder="کتاب، نویسنده یا اقتباس را جستجو کن..."
               aria-label="جستجو در پی‌رنگ"
-              className="
-    min-w-0
-    flex-1
-    bg-transparent
-    text-sm
-    outline-none
-    placeholder:text-muted-foreground/70
-    [&::-webkit-search-cancel-button]:appearance-none
-    [&::-webkit-search-decoration]:appearance-none
-  "
+              className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/70
+    [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
             />
 
             {trimmedQuery ? (
@@ -203,24 +195,9 @@ export function SearchDialog({ trigger }: SearchDialogProps) {
               type="button"
               onClick={handleSearch}
               disabled={!trimmedQuery}
-              className="
-                hidden
-                shrink-0
-                items-center
-                gap-1.5
-                rounded-lg
-                bg-primary
-                px-3
-                py-1.5
-                text-xs
-                font-medium
-                text-primary-foreground
-                transition-all
-                hover:opacity-90
-                disabled:pointer-events-none
-                disabled:opacity-40
-                sm:flex
-              "
+              className="h-10 cursor-pointer hidden shrink-0 items-center gap-1.5 rounded-lg
+                bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground transition-all hover:opacity-90
+                disabled:pointer-events-none disabled:opacity-40 sm:flex"
             >
               جستجو
               <ArrowLeft className="size-3.5" />
