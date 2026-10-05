@@ -180,3 +180,41 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+
+  :root {
+    --scrollbar-thumb: oklch(0.72 0.16 50);
+    --scrollbar-thumb-hover: oklch(0.67 0.19 50);
+  }
+
+  .dark {
+    --scrollbar-thumb: oklch(0.68 0.17 55);
+    --scrollbar-thumb-hover: oklch(0.76 0.16 58);
+  }
+
+  *::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+}
