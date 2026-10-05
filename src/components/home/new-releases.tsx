@@ -68,9 +68,9 @@ const newReleases = [
 export function NewReleases() {
   return (
     <BookSection
-      eyebrow="تازه‌های پی‌رنگ"
-      title="تازه‌های پی‌رنگ"
-      description="جدیدترین کتاب‌های اضافه‌شده به پی‌رنگ"
+      eyebrow="تازه در پی‌رنگ"
+      title="تازه‌های کتاب"
+      description="کتاب‌هایی که به‌تازگی به مجموعه پی‌رنگ اضافه شده‌اند"
       books={newReleases}
       icon={BookOpen}
     />
