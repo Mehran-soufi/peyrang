@@ -4,6 +4,7 @@ import { NewReleases } from "@/components/home/new-releases";
 import { PopularBooks } from "@/components/home/popular-books";
 import DailyQuote from "@/components/home/daily-quote";
 import { Authors } from "@/components/home/authors";
+import { Adaptations } from "@/components/home/adaptations";
 
 export default function Home() {
   return (
@@ -12,8 +13,9 @@ export default function Home() {
       <DailyQuote/>
       <PopularBooks />
       <CommunityCta/>
-      <NewReleases/>
       <Authors />
+      <NewReleases/>
+      <Adaptations />
     </main>
   );
 }
