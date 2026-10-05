@@ -84,7 +84,7 @@ export function Hero() {
         <div className="mx-auto w-full text-center">
           {/* Eyebrow */}
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/20 px-3.5 py-1.5 text-xs font-medium text-white/90 shadow-lg backdrop-blur-md">
-            <Sparkles className="size-3.5 text-amber-300" />
+            <Sparkles className="size-3.5 text-orange-300" />
 
             <span>دنیای کتاب و اقتباس</span>
           </div>
@@ -114,7 +114,7 @@ export function Hero() {
                   className="group flex h-14 w-full items-center gap-3 rounded-2xl
                    border border-white/25 bg-white/90 px-4 text-right text-sm 
                    text-muted-foreground shadow-2xl shadow-black/20 backdrop-blur-xl
-                    transition-all duration-300 hover:border-orange-500/60 hover:bg-white hover:shadow-amber-900/20 focus-visible:outline-none 
+                    transition-all duration-300 hover:border-orange-500/60 hover:bg-white hover:shadow-orange-900/20 focus-visible:outline-none 
                     focus-visible:ring-2 focus-visible:ring-orange-500/70 dark:bg-background/90 
                     dark:hover:bg-background sm:h-16 sm:rounded-2xl sm:px-5"
                 >
@@ -143,7 +143,7 @@ export function Hero() {
                 type="button"
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/20 px-3 py-1.5 text-xs font-medium text-white/80 backdrop-blur-md transition-all hover:border-white/30 hover:bg-white/10 hover:text-white"
               >
-                <Icon className="size-3.5 text-amber-300" />
+                <Icon className="size-3.5 text-orange-300" />
                 <span>{label}</span>
               </button>
             ))}
