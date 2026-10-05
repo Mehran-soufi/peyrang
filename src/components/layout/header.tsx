@@ -29,7 +29,7 @@ export function Header({
         ${
           isTransparent
             ? "border-transparent bg-transparent"
-            : "border-b border-primary/30 bg-background/80 opacity-90 shadow-sm shadow-black/3 backdrop-blur-2xl dark:shadow-black/10"
+            : "border-b border-primary/30 bg-background/80 opacity-95 shadow-sm shadow-black/3 backdrop-blur-2xl dark:shadow-black/10"
         }
       `}
     >
