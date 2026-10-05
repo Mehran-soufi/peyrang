@@ -3,9 +3,7 @@
 import { headers } from "next/headers";
 
 import { registerSchema } from "@/features/auth/schemas";
-import {
-  type SignUpState,
-} from "@/features/auth/state";
+import { type SignUpState } from "@/features/auth/state";
 import { createClient } from "@/lib/supabase/server";
 
 export async function signUp(
@@ -46,6 +44,13 @@ export async function signUp(
     return {
       success: false,
       message: error.message,
+    };
+  }
+
+  if (data.user?.identities?.length === 0) {
+    return {
+      success: false,
+      message: "این ایمیل قبلاً ثبت شده است.",
     };
   }
 

@@ -2,6 +2,7 @@ import { AmbientBackground } from "@/components/layout/ambient-background";
 import { Footer } from "@/components/layout/footer";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { PublicNavigation } from "@/components/layout/public-navigation";
+import { Toaster } from "@/components/ui/sonner";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function PublicLayout({
@@ -17,6 +18,8 @@ export default async function PublicLayout({
   return (
     <div className="relative flex min-h-screen flex-col pb-24 sm:pb-0">
       <AmbientBackground />
+
+      <Toaster />
 
       <PublicNavigation isAuthenticated={isAuthenticated} />
 

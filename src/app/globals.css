@@ -177,7 +177,7 @@
   html {
     @apply font-sans;
   }
-
+  
   body {
     @apply bg-background text-foreground;
     overflow-x: hidden;
@@ -211,5 +211,40 @@
 
   *::-webkit-scrollbar-thumb:hover {
     background-color: var(--scrollbar-thumb-hover);
+  }
+}
+
+/* Auth page transition */
+@supports (view-transition-name: auth-card) {
+  html[data-auth-transition="true"]::view-transition-old(auth-card) {
+    animation: auth-page-out 220ms ease both;
+  }
+
+  html[data-auth-transition="true"]::view-transition-new(auth-card) {
+    animation: auth-page-in 320ms ease both;
+  }
+
+  @keyframes auth-page-out {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateX(-18px);
+    }
+  }
+
+  @keyframes auth-page-in {
+    from {
+      opacity: 0;
+      transform: translateX(18px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 }
