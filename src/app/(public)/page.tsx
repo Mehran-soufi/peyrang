@@ -3,6 +3,7 @@ import { Hero } from "@/components/home/hero";
 import { NewReleases } from "@/components/home/new-releases";
 import { PopularBooks } from "@/components/home/popular-books";
 import DailyQuote from "@/components/home/daily-quote";
+import { Authors } from "@/components/home/authors";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <PopularBooks />
       <CommunityCta/>
       <NewReleases/>
+      <Authors />
     </main>
   );
 }

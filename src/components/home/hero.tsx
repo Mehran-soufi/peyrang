@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   BookOpen,
   Clapperboard,
+  CopyCheck,
   LibraryBig,
   NotebookPen,
   Search,
@@ -40,7 +41,7 @@ const stats = [
   {
     value: "—",
     label: "اقتباس",
-    icon: LibraryBig,
+    icon: CopyCheck,
   },
 ];
 
