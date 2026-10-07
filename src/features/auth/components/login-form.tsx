@@ -7,6 +7,9 @@ import { toast } from "sonner";
 
 import { signIn } from "@/features/auth/actions/sign-in";
 import { initialSignInState } from "@/features/auth/state";
+import { useSearchParams } from "next/navigation";
+
+const searchParams = useSearchParams();
 
 type ClientErrors = {
   email?: string;
@@ -85,6 +88,16 @@ export function LoginForm() {
     }
   };
 
+  useEffect(() => {
+    if (searchParams.get("password-reset") !== "success") {
+      return;
+    }
+
+    toast.success("رمز عبور تغییر کرد", {
+      description: "حالا می‌توانید با رمز عبور جدید وارد پی‌رنگ شوید.",
+    });
+  }, [searchParams]);
+
   return (
     <div>
       <div className="mb-6 space-y-1.5">
@@ -153,10 +166,7 @@ export function LoginForm() {
 
           {!clientErrors.email &&
             state.fieldErrors?.email?.map((error) => (
-              <p
-                key={error}
-                className="text-xs font-medium text-destructive"
-              >
+              <p key={error} className="text-xs font-medium text-destructive">
                 {error}
               </p>
             ))}
@@ -220,9 +230,7 @@ export function LoginForm() {
             <button
               type="button"
               aria-label={
-                showPassword
-                  ? "مخفی کردن رمز عبور"
-                  : "نمایش رمز عبور"
+                showPassword ? "مخفی کردن رمز عبور" : "نمایش رمز عبور"
               }
               onClick={() => setShowPassword((value) => !value)}
               className="
@@ -252,10 +260,7 @@ export function LoginForm() {
 
           {!clientErrors.password &&
             state.fieldErrors?.password?.map((error) => (
-              <p
-                key={error}
-                className="text-xs font-medium text-destructive"
-              >
+              <p key={error} className="text-xs font-medium text-destructive">
                 {error}
               </p>
             ))}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 type AuthTabsProps = {
-  active: "login" | "register";
+  active?: "login" | "register";
 };
 
 export function AuthTabs({ active }: AuthTabsProps) {

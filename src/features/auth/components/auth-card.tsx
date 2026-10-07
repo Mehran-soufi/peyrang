@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AuthTabs } from "@/features/auth/components/auth-tabs";
 
 type AuthCardProps = {
-  active: "login" | "register";
+  active?: "login" | "register";
   children: React.ReactNode;
 };
 
