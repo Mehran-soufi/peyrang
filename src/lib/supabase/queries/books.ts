@@ -29,27 +29,27 @@ export async function getBooks(): Promise<BookListItem[]> {
   const { data, error } = await supabase
     .from("books")
     .select(`
-      id,
-      title,
-      slug,
-      cover_url,
-      publication_year,
-      language,
-      book_authors (
-        author:authors (
-          id,
-          name,
-          slug
-        )
-      ),
-      book_genres (
-        genre:genres (
-          id,
-          name,
-          slug
-        )
+    id,
+    title,
+    slug,
+    cover_url,
+    publication_year,
+    language,
+    book_authors (
+      author:authors (
+        id,
+        name,
+        slug
       )
-    `)
+    ),
+    book_genres (
+      genre:genres (
+        id,
+        name,
+        slug
+      )
+    )
+  `)
     .order("created_at", { ascending: false });
 
   if (error) {
