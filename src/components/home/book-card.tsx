@@ -1,11 +1,11 @@
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { BookOpen, Star } from "lucide-react";
 
 type BookCardProps = {
   title: string;
   author: string;
-  rating: number;
-  cover: string;
+  rating?: number | null;
+  cover?: string | null;
 };
 
 export function BookCard({ title, author, rating, cover }: BookCardProps) {
@@ -28,17 +28,44 @@ export function BookCard({ title, author, rating, cover }: BookCardProps) {
         "
       >
         {/* Cover */}
-        <Image
-          src={cover}
-          alt={`جلد کتاب ${title}`}
-          fill
-          sizes="(max-width: 640px) 150px, (max-width: 1024px) 22vw, 180px"
-          className="
-            object-cover
-            transition-transform duration-500
-            group-hover:scale-[1.04]
-          "
-        />
+        {cover ? (
+          <Image
+            src={cover}
+            alt={`جلد کتاب ${title}`}
+            width={300}
+            height={450}
+            sizes="(max-width: 640px) 150px, (max-width: 1024px) 22vw, 180px"
+            className="
+    absolute inset-0
+    h-full w-full
+    object-cover
+    transition-transform duration-500
+    group-hover:scale-[1.04]
+  "
+          />
+        ) : (
+          <div
+            className="
+      absolute inset-0
+      w-full h-full
+      flex items-center justify-center
+      bg-linear-to-br from-orange-950 via-muted to-background
+      px-6 text-center
+    "
+          >
+            <div>
+              <Image
+                src="/assets/icon/payrang-icon.png"
+                alt="آیکون پی‌رنگ"
+                width={40}
+                height={40}
+                loading="lazy"
+              />
+
+              <p className="mt-3 text-sm font-bold text-white/80">{title}</p>
+            </div>
+          </div>
+        )}
 
         {/* Bottom gradient */}
         <div
@@ -53,23 +80,25 @@ export function BookCard({ title, author, rating, cover }: BookCardProps) {
         />
 
         {/* Rating */}
-        <div
-          className="
-            absolute left-2.5 top-2.5
-            flex items-center gap-1.5
-            rounded-lg
-            border border-white/15
-            bg-black/55
-            px-2.5 py-1.5
-            text-[11px] font-semibold
-            text-white
-            shadow-lg
-            backdrop-blur-md
-          "
-        >
-          <Star className="size-3.5 fill-orange-400 text-orange-400" />
-          <span>{rating.toFixed(1)}</span>
-        </div>
+        {rating != null && (
+          <div
+            className="
+      absolute left-2.5 top-2.5
+      flex items-center gap-1.5
+      rounded-lg
+      border border-white/15
+      bg-black/55
+      px-2.5 py-1.5
+      text-[11px] font-semibold
+      text-white
+      shadow-lg
+      backdrop-blur-md
+    "
+          >
+            <Star className="size-3.5 fill-orange-400 text-orange-400" />
+            <span>{rating.toFixed(1)}</span>
+          </div>
+        )}
 
         {/* Book Info */}
         <div

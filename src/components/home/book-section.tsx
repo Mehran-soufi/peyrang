@@ -13,8 +13,8 @@ import {
 type Book = {
   title: string;
   author: string;
-  rating: number;
-  cover: string;
+  rating?: number | null;
+  cover?: string | null;
 };
 
 type BookSectionProps = {

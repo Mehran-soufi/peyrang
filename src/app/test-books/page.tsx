@@ -46,6 +46,9 @@ export default async function TestBooksPage() {
               <p className="mt-4 text-xs text-muted-foreground">
                 slug: {book.slug}
               </p>
+              <p className="mt-2 text-xs text-orange-500">
+  cover: {book.cover ?? "—"}
+</p>
             </article>
           ))}
         </div>
