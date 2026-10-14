@@ -5,6 +5,8 @@ import { PublicNavigation } from "@/components/layout/public-navigation";
 import { Toaster } from "@/components/ui/sonner";
 import { createClient } from "@/lib/supabase/server";
 
+import { NavigationVisibilityProvider } from "@/components/layout/navigation-visibility-provider";
+
 export default async function PublicLayout({
   children,
 }: Readonly<{
@@ -21,9 +23,11 @@ export default async function PublicLayout({
 
       <Toaster />
 
-      <PublicNavigation isAuthenticated={isAuthenticated} />
+      <NavigationVisibilityProvider>
+        <PublicNavigation isAuthenticated={isAuthenticated} />
 
-      <main className="flex-1">{children}</main>
+        <main className="flex-1">{children}</main>
+      </NavigationVisibilityProvider>
 
       <Footer />
 

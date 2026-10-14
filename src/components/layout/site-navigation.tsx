@@ -45,7 +45,7 @@ export function SiteNavigation({
 }: SiteNavigationProps) {
   const pathname = usePathname();
 
-  const shouldShow = !isHome || (isScrolled && isVisible);
+  const shouldShow = isScrolled && isVisible;
 
   return (
     <nav

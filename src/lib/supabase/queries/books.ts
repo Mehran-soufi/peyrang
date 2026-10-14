@@ -11,17 +11,59 @@ export type BookListItem = {
   genres: string[];
 };
 
+export type BookDetail = {
+  id: string;
+  title: string;
+  originalTitle: string | null;
+  slug: string;
+  description: string | null;
+  cover: string | null;
+  publicationYear: number | null;
+  pageCount: number | null;
+  language: string | null;
+
+  author: {
+    id: string;
+    name: string;
+    slug: string;
+    bio: string | null;
+    avatarUrl: string | null;
+  } | null;
+
+  genres: {
+    id: string;
+    name: string;
+    slug: string;
+  }[];
+
+  adaptations: {
+    id: string;
+    title: string;
+    type: string;
+    releaseYear: number | null;
+    description: string | null;
+    posterUrl: string | null;
+    director: string | null;
+  }[];
+};
+
 type NestedEntity = {
   id: string;
   name: string;
   slug: string;
 };
 
-function getFirstEntity(
-  value: NestedEntity | NestedEntity[] | null | undefined,
-) {
-  return Array.isArray(value) ? value[0] : value;
+type AuthorEntity = NestedEntity & {
+  bio: string | null;
+  avatar_url: string | null;
+};
+
+function getFirstEntity<T>(
+  value: T | T[] | null | undefined,
+): T | undefined {
+  return Array.isArray(value) ? value[0] : value ?? undefined;
 }
+
 
 export async function getBooks(): Promise<BookListItem[]> {
   const supabase = await createClient();
@@ -76,4 +118,112 @@ export async function getBooks(): Promise<BookListItem[]> {
         .filter((name): name is string => Boolean(name)),
     };
   });
+}
+
+export async function getBookBySlug(
+  slug: string,
+): Promise<BookDetail | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("books")
+    .select(`
+      id,
+      title,
+      original_title,
+      slug,
+      description,
+      cover_url,
+      publication_year,
+      page_count,
+      language,
+      book_authors (
+        author:authors (
+          id,
+          name,
+          slug,
+          bio,
+          avatar_url
+        )
+      ),
+      book_genres (
+        genre:genres (
+          id,
+          name,
+          slug
+        )
+      ),
+      adaptations (
+  id,
+  title,
+  type,
+  release_year,
+  description,
+  poster_url,
+  director
+)
+    `)
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to fetch book: ${error.message}`);
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const author = getFirstEntity(data.book_authors[0]?.author);
+
+  return {
+    id: data.id,
+    title: data.title,
+    originalTitle: data.original_title,
+    slug: data.slug,
+    description: data.description,
+    cover: data.cover_url,
+    publicationYear: data.publication_year,
+    pageCount: data.page_count,
+    language: data.language,
+    author: author
+      ? {
+        id: author.id,
+        name: author.name,
+        slug: author.slug,
+        bio: author.bio,
+        avatarUrl: author.avatar_url,
+      }
+      : null,
+    genres: data.book_genres
+      .map(({ genre }) => {
+        const item = getFirstEntity(genre);
+
+        return item
+          ? {
+            id: item.id,
+            name: item.name,
+            slug: item.slug,
+          }
+          : null;
+      })
+      .filter(
+        (
+          genre,
+        ): genre is {
+          id: string;
+          name: string;
+          slug: string;
+        } => genre !== null,
+      ),
+    adaptations: data.adaptations.map((adaptation) => ({
+      id: adaptation.id,
+      title: adaptation.title,
+      type: adaptation.type,
+      releaseYear: adaptation.release_year,
+      description: adaptation.description,
+      posterUrl: adaptation.poster_url,
+      director: adaptation.director,
+    })),
+  };
 }
