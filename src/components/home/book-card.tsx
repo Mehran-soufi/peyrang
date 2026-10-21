@@ -1,16 +1,25 @@
 import Image from "next/image";
-import { BookOpen, Star } from "lucide-react";
+import { Star } from "lucide-react";
+import Link from "next/link";
 
 type BookCardProps = {
+  id: string;
+  slug: string;
   title: string;
   author: string;
   rating?: number | null;
   cover?: string | null;
 };
 
-export function BookCard({ title, author, rating, cover }: BookCardProps) {
+export function BookCard({
+  slug,
+  title,
+  author,
+  rating,
+  cover,
+}: BookCardProps) {
   return (
-    <article className="group w-full min-w-0">
+    <Link href={`/books/${slug}`} className="group w-full min-w-0">
       <div
         className="
           relative aspect-2/3
@@ -35,23 +44,12 @@ export function BookCard({ title, author, rating, cover }: BookCardProps) {
             width={300}
             height={450}
             sizes="(max-width: 640px) 150px, (max-width: 1024px) 22vw, 180px"
-            className="
-    absolute inset-0
-    h-full w-full
-    object-cover
-    transition-transform duration-500
-    group-hover:scale-[1.04]
-  "
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
         ) : (
           <div
-            className="
-      absolute inset-0
-      w-full h-full
-      flex items-center justify-center
-      bg-linear-to-br from-orange-950 via-muted to-background
-      px-6 text-center
-    "
+            className="absolute inset-0 w-full h-full flex items-center justify-center
+             bg-linear-to-br from-orange-950 via-muted to-background px-6 text-center"
           >
             <div>
               <Image
@@ -82,18 +80,8 @@ export function BookCard({ title, author, rating, cover }: BookCardProps) {
         {/* Rating */}
         {rating != null && (
           <div
-            className="
-      absolute left-2.5 top-2.5
-      flex items-center gap-1.5
-      rounded-lg
-      border border-white/15
-      bg-black/55
-      px-2.5 py-1.5
-      text-[11px] font-semibold
-      text-white
-      shadow-lg
-      backdrop-blur-md
-    "
+            className="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-lg border border-white/15
+                bg-black/55 px-2.5 py-1.5 text-[11px] font-semibold text-white shadow-lg backdrop-blur-md"
           >
             <Star className="size-3.5 fill-orange-400 text-orange-400" />
             <span>{rating.toFixed(1)}</span>
@@ -134,6 +122,6 @@ export function BookCard({ title, author, rating, cover }: BookCardProps) {
           </p>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }

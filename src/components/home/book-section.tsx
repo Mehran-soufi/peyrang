@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/carousel";
 
 type Book = {
+  id: string;
+  slug: string;
   title: string;
   author: string;
   rating?: number | null;

@@ -9,6 +9,8 @@ export type BookListItem = {
   publicationYear: number | null;
   language: string | null;
   genres: string[];
+  ratingAverage: number | null;
+  ratingCount: number;
 };
 
 export type BookDetail = {
@@ -92,6 +94,9 @@ export async function getBooks(): Promise<BookListItem[]> {
         name,
         slug
       )
+    ),
+    ratings (
+      rating
     )
   `)
     .order("created_at", { ascending: false });
@@ -102,6 +107,13 @@ export async function getBooks(): Promise<BookListItem[]> {
 
   return data.map((book) => {
     const author = getFirstEntity(book.book_authors[0]?.author);
+    const ratingCount = book.ratings.length;
+
+    const ratingAverage =
+      ratingCount > 0
+        ? book.ratings.reduce((sum, item) => sum + item.rating, 0) /
+        ratingCount
+        : null;
 
     return {
       id: book.id,
@@ -114,10 +126,11 @@ export async function getBooks(): Promise<BookListItem[]> {
       genres: book.book_genres
         .map(({ genre }) => {
           const item = getFirstEntity(genre);
-
           return item?.name;
         })
         .filter((name): name is string => Boolean(name)),
+      ratingAverage,
+      ratingCount,
     };
   });
 }
@@ -288,4 +301,38 @@ export async function getLibraryStats(): Promise<LibraryStats> {
     authors: authorsResult.count ?? 0,
     adaptations: adaptationsResult.count ?? 0,
   };
+}
+
+export async function getPopularBooks(): Promise<BookListItem[]> {
+  const books = await getBooks();
+
+  const ratedBooks = books.filter(
+    (book) => book.ratingCount > 0 && book.ratingAverage !== null,
+  );
+
+  if (ratedBooks.length === 0) return [];
+
+  const totalVotes = ratedBooks.reduce(
+    (sum, book) => sum + book.ratingCount,
+    0,
+  );
+
+  const globalAverage = ratedBooks.reduce(
+    (sum, book) => sum + book.ratingAverage! * book.ratingCount,
+    0,
+  ) / totalVotes;
+
+  const minimumVotes = 5;
+
+  return ratedBooks
+    .map((book) => ({
+      book,
+      score:
+        (book.ratingCount / (book.ratingCount + minimumVotes)) *
+        book.ratingAverage! +
+        (minimumVotes / (book.ratingCount + minimumVotes)) * globalAverage,
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 10)
+    .map(({ book }) => book);
 }

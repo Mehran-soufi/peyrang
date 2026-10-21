@@ -5,15 +5,18 @@ import { BookSection } from "@/components/home/book-section";
 import { BookCardSkeleton } from "@/components/home/book-card-skeleton";
 import { getBooks } from "@/lib/supabase/queries/books";
 
+
 async function NewReleasesContent() {
   const books = await getBooks();
 
-  const newReleases = books.map((book) => ({
-    title: book.title,
-    author: book.author,
-    rating: null,
-    cover: book.cover,
-  }));
+const newReleases = books.slice(0, 10).map((book) => ({
+  id: book.id,
+  slug: book.slug,
+  title: book.title,
+  author: book.author,
+  rating: book.ratingAverage,
+  cover: book.cover,
+}));
 
   return (
     <BookSection
@@ -25,6 +28,7 @@ async function NewReleasesContent() {
     />
   );
 }
+
 
 function NewReleasesSkeleton() {
   return (
