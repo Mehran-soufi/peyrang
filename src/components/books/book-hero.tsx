@@ -176,11 +176,17 @@ export function BookHero({ book }: BookHeroProps) {
                 <div className="flex items-center gap-1">
                   <Star className="size-4 fill-orange-500 text-orange-500" />
 
-                  <span className="text-sm font-bold">—</span>
+                  <span className="text-sm font-bold">
+                    {book.ratingAverage !== null
+                      ? book.ratingAverage.toFixed(1)
+                      : "—"}
+                  </span>
                 </div>
 
                 <span className="text-xs text-muted-foreground">
-                  بدون امتیاز
+                  {book.ratingCount > 0
+                    ? `${book.ratingCount.toLocaleString("fa-IR")} امتیاز`
+                    : "بدون امتیاز"}
                 </span>
               </div>
 

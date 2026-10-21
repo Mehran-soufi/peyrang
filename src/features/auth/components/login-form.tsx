@@ -9,7 +9,6 @@ import { signIn } from "@/features/auth/actions/sign-in";
 import { initialSignInState } from "@/features/auth/state";
 import { useSearchParams } from "next/navigation";
 
-const searchParams = useSearchParams();
 
 type ClientErrors = {
   email?: string;
@@ -41,6 +40,8 @@ function SubmitButton({ pending }: { pending: boolean }) {
 }
 
 export function LoginForm() {
+const searchParams = useSearchParams();
+
   const [state, formAction, pending] = useActionState(
     signIn,
     initialSignInState,

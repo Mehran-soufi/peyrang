@@ -34,13 +34,15 @@ export function BookDetail({ book }: BookDetailProps) {
 
               <div className="order-1 min-w-0 lg:order-2">
                 <div className="lg:sticky lg:top-33">
-                  <BookRating />
+                  <BookRating bookId={book.id} mode="summary" />
                 </div>
               </div>
             </div>
           )}
 
-          {activeTab === "reviews" && <BookRating />}
+          {activeTab === "reviews" && (
+  <BookRating bookId={book.id} mode="interactive" />
+)}
 
           {activeTab === "similar" && (
             <section className="rounded-2xl border border-border/60 bg-background/40 p-6">

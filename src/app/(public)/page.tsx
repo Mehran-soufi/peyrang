@@ -5,16 +5,19 @@ import { PopularBooks } from "@/components/home/popular-books";
 import DailyQuote from "@/components/home/daily-quote";
 import { Authors } from "@/components/home/authors";
 import { Adaptations } from "@/components/home/adaptations";
+import { getLibraryStats } from "@/lib/supabase/queries/books";
 
-export default function Home() {
+export default async function Home() {
+  const stats = await getLibraryStats();
+
   return (
-    <main className="flex flex-col min-h-screen items-center justify-center w-full">
-      <Hero />
-      <DailyQuote/>
+    <main className="flex min-h-screen w-full flex-col items-center justify-center">
+      <Hero stats={stats} />
+      <DailyQuote />
       <PopularBooks />
-      <CommunityCta/>
+      <CommunityCta />
       <Authors />
-      <NewReleases/>
+      <NewReleases />
       <Adaptations />
     </main>
   );

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { SearchDialog } from "@/features/search/components/search-dialog";
+import { LibraryStats } from "@/lib/supabase/queries/books";
 
 const quickFilters = [
   {
@@ -27,25 +28,28 @@ const quickFilters = [
   },
 ];
 
-const stats = [
-  {
-    value: "—",
-    label: "کتاب",
-    icon: LibraryBig,
-  },
-  {
-    value: "—",
-    label: "نویسنده",
-    icon: NotebookPen,
-  },
-  {
-    value: "—",
-    label: "اقتباس",
-    icon: CopyCheck,
-  },
-];
+type HeroProps = {
+  stats: LibraryStats;
+};
 
-export function Hero() {
+export function Hero({ stats }: HeroProps) {
+  const statsItems = [
+    {
+      value: stats.books.toLocaleString("fa-IR"),
+      label: "کتاب",
+      icon: LibraryBig,
+    },
+    {
+      value: stats.authors.toLocaleString("fa-IR"),
+      label: "نویسنده",
+      icon: NotebookPen,
+    },
+    {
+      value: stats.adaptations.toLocaleString("fa-IR"),
+      label: "اقتباس",
+      icon: CopyCheck,
+    },
+  ];
   return (
     <section
       aria-labelledby="hero-title"
@@ -102,8 +106,8 @@ export function Hero() {
 
           {/* Description */}
           <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/80 drop-shadow-lg sm:text-base sm:leading-8">
-            کتاب‌ها، نویسندگان و داستان‌هایی را کشف کن که شاید قرار باشد بخشی
-            از دنیای تو شوند.
+            کتاب‌ها، نویسندگان و داستان‌هایی را کشف کن که شاید قرار باشد بخشی از
+            دنیای تو شوند.
           </p>
 
           {/* Main search */}
@@ -153,13 +157,11 @@ export function Hero() {
 
         {/* Stats */}
         <div className="mx-auto mt-2 md:mt-auto grid w-full max-w-2xl grid-cols-3 overflow-hidden rounded-2xl border border-white/15 bg-black/20 backdrop-blur-md">
-          {stats.map(({ value, label, icon: Icon }, index) => (
+          {statsItems.map(({ value, label, icon: Icon }, index) => (
             <div
               key={label}
               className={`flex flex-col items-center justify-center px-3 py-4 ${
-                index !== stats.length - 1
-                  ? "border-l border-white/10"
-                  : ""
+                index !== statsItems.length - 1 ? "border-l border-white/10" : ""
               }`}
             >
               <Icon className="size-5 text-orange-500 sm:size-5.5" />

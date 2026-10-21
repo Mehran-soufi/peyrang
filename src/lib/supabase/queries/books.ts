@@ -21,6 +21,8 @@ export type BookDetail = {
   publicationYear: number | null;
   pageCount: number | null;
   language: string | null;
+  ratingAverage: number | null;
+  ratingCount: number;
 
   author: {
     id: string;
@@ -174,6 +176,25 @@ export async function getBookBySlug(
     return null;
   }
 
+  const { data: ratings, error: ratingsError } = await supabase
+    .from("ratings")
+    .select("rating")
+    .eq("book_id", data.id);
+
+  if (ratingsError) {
+    throw new Error(
+      `Failed to fetch book ratings: ${ratingsError.message}`,
+    );
+  }
+
+  const ratingCount = ratings.length;
+
+  const ratingAverage =
+    ratingCount > 0
+      ? ratings.reduce((sum, item) => sum + item.rating, 0) /
+      ratingCount
+      : null;
+
   const author = getFirstEntity(data.book_authors[0]?.author);
 
   return {
@@ -186,6 +207,8 @@ export async function getBookBySlug(
     publicationYear: data.publication_year,
     pageCount: data.page_count,
     language: data.language,
+    ratingAverage,
+    ratingCount,
     author: author
       ? {
         id: author.id,
@@ -225,5 +248,44 @@ export async function getBookBySlug(
       posterUrl: adaptation.poster_url,
       director: adaptation.director,
     })),
+  };
+}
+
+
+export type LibraryStats = {
+  books: number;
+  authors: number;
+  adaptations: number;
+};
+
+export async function getLibraryStats(): Promise<LibraryStats> {
+  const supabase = await createClient();
+
+  const [booksResult, authorsResult, adaptationsResult] =
+    await Promise.all([
+      supabase
+        .from("books")
+        .select("*", { count: "exact", head: true }),
+      supabase
+        .from("authors")
+        .select("*", { count: "exact", head: true }),
+      supabase
+        .from("adaptations")
+        .select("*", { count: "exact", head: true }),
+    ]);
+
+  const error =
+    booksResult.error ??
+    authorsResult.error ??
+    adaptationsResult.error;
+
+  if (error) {
+    throw new Error(`Failed to fetch library stats: ${error.message}`);
+  }
+
+  return {
+    books: booksResult.count ?? 0,
+    authors: authorsResult.count ?? 0,
+    adaptations: adaptationsResult.count ?? 0,
   };
 }
