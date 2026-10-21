@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 
 type SearchDialogProps = {
   trigger: React.ReactElement;
@@ -50,15 +51,82 @@ const popularSearches = [
   "1984",
 ];
 
+type SearchResult = {
+  id: string;
+  title: string;
+  slug: string;
+  cover: string | null;
+  author: string;
+  ratingAverage: number | null;
+  ratingCount: number;
+};
+
 export function SearchDialog({ trigger }: SearchDialogProps) {
   const router = useRouter();
 
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
 
+  const [results, setResults] = React.useState<SearchResult[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [searchError, setSearchError] = React.useState(false);
+
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const trimmedQuery = query.trim();
+
+  React.useEffect(() => {
+    if (!open || !trimmedQuery) {
+      setResults([]);
+      setLoading(false);
+      setSearchError(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const controller = new AbortController();
+
+    const timeout = window.setTimeout(async () => {
+      setLoading(true);
+      setSearchError(false);
+
+      try {
+        const response = await fetch(
+          `/api/search/books?q=${encodeURIComponent(trimmedQuery)}`,
+          { signal: controller.signal },
+        );
+
+        if (!response.ok) {
+          throw new Error("Search request failed");
+        }
+
+        const data: { books: SearchResult[] } = await response.json();
+
+        if (!cancelled) {
+          setResults(data.books);
+        }
+      } catch (error) {
+        if (
+          !cancelled &&
+          !(error instanceof Error && error.name === "AbortError")
+        ) {
+          setResults([]);
+          setSearchError(true);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [open, trimmedQuery]);
 
   const handleSearch = React.useCallback(() => {
     if (!trimmedQuery) {
@@ -355,48 +423,52 @@ export function SearchDialog({ trigger }: SearchDialogProps) {
               </div>
 
               {/* Placeholder result groups */}
-              <div className="space-y-2">
-                <SearchPreviewRow
-                  icon={BookOpen}
-                  label="کتاب‌ها"
-                  description="نتایج مرتبط با کتاب‌ها"
-                  onClick={handleSearch}
-                />
 
-                <SearchPreviewRow
-                  icon={UserRound}
-                  label="نویسندگان"
-                  description="نتایج مرتبط با نویسندگان"
-                  onClick={handleSearch}
-                />
-
-                <SearchPreviewRow
-                  icon={Sparkles}
-                  label="اقتباس‌ها"
-                  description="نتایج مرتبط با اقتباس‌ها"
-                  onClick={handleSearch}
-                />
-              </div>
-
-              <div
-                className="
-                  flex
-                  min-h-20
-                  items-center
-                  justify-center
-                  rounded-xl
-                  border
-                  border-dashed
-                  border-border/60
-                  px-4
-                  text-center
-                "
-              >
-                <p className="text-xs leading-6 text-muted-foreground">
-                  نتایج واقعی جستجو پس از اتصال به داده‌های پی‌رنگ در این بخش
-                  نمایش داده خواهند شد.
+              {loading ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  در حال جست‌وجو...
                 </p>
-              </div>
+              ) : searchError ? (
+                <p className="py-8 text-center text-sm text-destructive">
+                  دریافت نتایج ناموفق بود. دوباره تلاش کن.
+                </p>
+              ) : results.length > 0 ? (
+                <div className="space-y-2">
+                  {results.map((book) => (
+                    <Link
+                      target="_blank"
+                      key={book.id}
+                      href={`/books/${book.slug}`}
+                      onClick={() => setOpen(false)}
+                      className="group flex items-center gap-3 rounded-xl border border-border/50 bg-background/40 p-3 transition-colors hover:border-primary/30 hover:bg-primary/5"
+                    >
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <BookOpen className="size-4" />
+                      </span>
+
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium">
+                          {book.title}
+                        </span>
+                        <span className="mt-1 block truncate text-xs text-muted-foreground">
+                          {book.author}
+                        </span>
+                      </span>
+
+                      {book.ratingAverage !== null && (
+                        <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+                          <span className="text-orange-500">★</span>
+                          {book.ratingAverage.toFixed(1)}
+                        </span>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  کتابی با این عبارت پیدا نشد.
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -436,79 +508,5 @@ export function SearchDialog({ trigger }: SearchDialogProps) {
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-type SearchPreviewRowProps = {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  description: string;
-  onClick: () => void;
-};
-
-function SearchPreviewRow({
-  icon: Icon,
-  label,
-  description,
-  onClick,
-}: SearchPreviewRowProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="
-        group
-        flex
-        w-full
-        items-center
-        gap-3
-        rounded-xl
-        border
-        border-border/50
-        bg-background/40
-        p-3
-        text-right
-        transition-all
-        hover:border-primary/25
-        hover:bg-primary/4
-      "
-    >
-      <span
-        className="
-          flex
-          size-10
-          shrink-0
-          items-center
-          justify-center
-          rounded-lg
-          bg-muted
-          text-muted-foreground
-          transition-colors
-          group-hover:bg-primary/10
-          group-hover:text-primary
-        "
-      >
-        <Icon className="size-4" />
-      </span>
-
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-medium">{label}</span>
-
-        <span className="mt-0.5 block text-xs text-muted-foreground">
-          {description}
-        </span>
-      </span>
-
-      <ArrowLeft
-        className="
-          size-4
-          shrink-0
-          text-muted-foreground/50
-          transition-transform
-          group-hover:-translate-x-0.5
-          group-hover:text-primary
-        "
-      />
-    </button>
   );
 }
