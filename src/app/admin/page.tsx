@@ -1,4 +1,5 @@
 import { requireAdmin } from "@/lib/supabase/admin";
+import Link from "next/link";
 
 export default async function AdminDashboardPage() {
   const { user } = await requireAdmin();
@@ -41,6 +42,16 @@ export default async function AdminDashboardPage() {
               مدیریت عنوان‌های جایگزین برای جست‌وجوی بهتر
             </p>
           </div>
+          <Link
+  href="/admin/reviews"
+  className="rounded-2xl border bg-card p-5 transition-colors hover:border-orange-500/50"
+>
+  <h2 className="font-bold">بررسی و تأیید نقدها</h2>
+
+  <p className="mt-2 text-sm text-muted-foreground">
+    بررسی نقدهای کاربران و تأیید یا رد آن‌ها پیش از انتشار
+  </p>
+</Link>
         </section>
 
         <footer className="border-t pt-4 text-xs text-muted-foreground">
