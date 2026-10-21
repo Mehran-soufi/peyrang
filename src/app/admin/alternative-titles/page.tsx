@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAlternativeTitle } from "./actions";
 import { BookSelector } from "./book-selector";
 import { SubmitButton } from "./submit-button";
+import { AlternativeTitleActions } from "./alternative-title-actions";
 
 export default async function AlternativeTitlesPage() {
   await requireAdmin();
@@ -109,6 +110,7 @@ export default async function AlternativeTitlesPage() {
                     <th className="p-4 font-semibold">عنوان جایگزین</th>
                     <th className="p-4 font-semibold">کتاب اصلی</th>
                     <th className="p-4 font-semibold">پیوند کتاب</th>
+                    <th className="p-4 font-semibold">عملیات</th>
                   </tr>
                 </thead>
 
@@ -133,6 +135,14 @@ export default async function AlternativeTitlesPage() {
                           ) : (
                             "—"
                           )}
+                        </td>
+                        <td className="p-4">
+                          <AlternativeTitleActions
+                            id={item.id}
+                            title={item.title}
+                            bookId={book?.id ?? ""}
+                            books={books}
+                          />
                         </td>
                       </tr>
                     );

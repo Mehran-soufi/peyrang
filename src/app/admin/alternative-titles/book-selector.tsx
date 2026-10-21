@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 
 type Book = {
   id: string;
@@ -11,28 +10,30 @@ type Book = {
 
 type BookSelectorProps = {
   books: Book[];
+  initialBook?: Book | null;
 };
 
-export function BookSelector({ books }: BookSelectorProps) {
+export function BookSelector({ books, initialBook = null }: BookSelectorProps) {
+  const inputId = useId();
   const [query, setQuery] = useState("");
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(initialBook);
 
   const filteredBooks = books
     .filter((book) =>
-      book.title.toLocaleLowerCase("fa").includes(
-        query.trim().toLocaleLowerCase("fa"),
-      ),
+      book.title
+        .toLocaleLowerCase("fa")
+        .includes(query.trim().toLocaleLowerCase("fa")),
     )
     .slice(0, 10);
 
   return (
     <div className="space-y-2">
-      <label htmlFor="book-search" className="text-sm font-medium">
+      <label htmlFor={inputId} className="text-sm font-medium">
         کتاب اصلی
       </label>
 
       <input
-        id="book-search"
+        id={inputId}
         type="text"
         value={selectedBook ? selectedBook.title : query}
         onChange={(event) => {
@@ -78,6 +79,7 @@ export function BookSelector({ books }: BookSelectorProps) {
           <span>
             کتاب انتخاب‌شده: <strong>{selectedBook.title}</strong>
           </span>
+
           <button
             type="button"
             onClick={() => {
