@@ -41,8 +41,8 @@ export function BookDetail({ book }: BookDetailProps) {
           )}
 
           {activeTab === "reviews" && (
-  <BookRating bookId={book.id} mode="interactive" />
-)}
+            <BookRating bookId={book.id} mode="interactive" />
+          )}
 
           {activeTab === "similar" && (
             <section className="rounded-2xl border border-border/60 bg-background/40 p-6">

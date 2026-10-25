@@ -24,11 +24,20 @@ type ReviewRow = {
   status: "pending" | "approved" | "rejected";
 };
 
+type ReviewAuthor = {
+  id: string;
+  username: string | null;
+  display_name: string | null;
+};
+
 export function BookRating({ bookId, mode }: BookRatingProps) {
   const router = useRouter();
 
   const [ratings, setRatings] = useState<RatingRow[]>([]);
   const [reviews, setReviews] = useState<ReviewRow[]>([]);
+  const [reviewAuthors, setReviewAuthors] = useState<
+    Record<string, ReviewAuthor>
+  >({});
   const [userId, setUserId] = useState<string | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [selectedRating, setSelectedRating] = useState(0);
@@ -114,9 +123,33 @@ export function BookRating({ bookId, mode }: BookRatingProps) {
           0)
         : 0;
 
+      const authorIds = [
+        ...new Set(reviewRows.map((review) => review.user_id)),
+      ];
+
+      const { data: authorData, error: authorError } =
+        authorIds.length > 0
+          ? await supabase.rpc("get_public_review_authors", {
+              author_ids: authorIds,
+            })
+          : { data: [], error: null };
+
+      if (cancelled) return;
+
+      if (authorError) {
+        console.error("Review authors load error:", authorError);
+      }
+
+      const authorMap: Record<string, ReviewAuthor> = {};
+
+      for (const author of (authorData ?? []) as ReviewAuthor[]) {
+        authorMap[author.id] = author;
+      }
+
       setUserId(currentUserId);
       setRatings(ratingRows);
       setReviews(reviewRows);
+      setReviewAuthors(authorMap);
       setUserRating(currentRating);
       setSelectedRating(currentRating);
       setIsLoading(false);
@@ -489,9 +522,9 @@ export function BookRating({ bookId, mode }: BookRatingProps) {
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <p className="text-sm font-bold">
-                            {review.user_id === userId
-                              ? "مهران صوفی"
-                              : "کاربر پی‌رنگ"}
+                          {reviewAuthors[review.user_id]?.display_name ||
+  reviewAuthors[review.user_id]?.username ||
+  "کاربر پی‌رنگ"}
                           </p>
 
                           {(() => {
@@ -540,7 +573,7 @@ export function BookRating({ bookId, mode }: BookRatingProps) {
                         </div>
                       </div>
 
-                      <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-7 text-foreground/90">
+                      <p className="mt-3 whitespace-pre-wrap wrap-break-word text-sm leading-7 text-foreground/90">
                         {review.content}
                       </p>
                     </article>
