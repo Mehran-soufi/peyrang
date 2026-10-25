@@ -1,13 +1,10 @@
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BookHeart, MessageSquareText, UserRound } from "lucide-react";
 
-import {
-  getMyFavorites,
-  getMyReviews,
-} from "@/lib/supabase/queries/profile";
+import { getMyFavorites, getMyReviews } from "@/lib/supabase/queries/profile";
 import { createClient } from "@/lib/supabase/server";
+import { ProfileEditor } from "@/features/profile/components/profile-editor";
 
 const reviewStatusLabels: Record<string, string> = {
   approved: "تأیید شده",
@@ -27,19 +24,16 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const [
-    { data: profile, error: profileError },
-    reviews,
-    favorites,
-  ] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("username, display_name, avatar_url, bio, role, created_at")
-      .eq("id", user.id)
-      .maybeSingle(),
-    getMyReviews(user.id),
-    getMyFavorites(user.id),
-  ]);
+  const [{ data: profile, error: profileError }, reviews, favorites] =
+    await Promise.all([
+      supabase
+        .from("profiles")
+        .select("username, display_name, avatar_url, bio, role, created_at")
+        .eq("id", user.id)
+        .maybeSingle(),
+      getMyReviews(user.id),
+      getMyFavorites(user.id),
+    ]);
 
   if (profileError) {
     throw new Error("دریافت اطلاعات پروفایل با خطا مواجه شد.");
@@ -69,9 +63,7 @@ export default async function ProfilePage() {
             </div>
 
             <div className="min-w-0 flex-1 pb-1">
-              <h1 className="text-xl font-bold sm:text-2xl">
-                {displayName}
-              </h1>
+              <h1 className="text-xl font-bold sm:text-2xl">{displayName}</h1>
               {profile?.username && (
                 <p className="mt-1 text-sm text-muted-foreground" dir="ltr">
                   @{profile.username}
@@ -91,6 +83,15 @@ export default async function ProfilePage() {
           )}
         </div>
       </section>
+
+      <ProfileEditor
+        username={profile?.username ?? ""}
+        displayName={profile?.display_name ?? ""}
+        avatarUrl={profile?.avatar_url ?? null}
+        bio={profile?.bio ?? ""}
+        email={user.email ?? ""}
+        createdAt={profile?.created_at ?? user.created_at}
+      />
 
       <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4">
         <div className="rounded-2xl border bg-card/60 p-4 sm:p-5">
@@ -182,7 +183,9 @@ export default async function ProfilePage() {
         {favorites.length === 0 ? (
           <div className="mt-4 rounded-2xl border border-dashed p-8 text-center">
             <BookHeart className="mx-auto size-8 text-muted-foreground" />
-            <p className="mt-3 font-medium">هنوز کتابی به علاقه‌مندی‌ها اضافه نکرده‌اید</p>
+            <p className="mt-3 font-medium">
+              هنوز کتابی به علاقه‌مندی‌ها اضافه نکرده‌اید
+            </p>
             <p className="mt-1 text-sm text-muted-foreground">
               کتاب‌های موردعلاقه‌تان را ذخیره کنید تا اینجا در دسترس باشند.
             </p>
