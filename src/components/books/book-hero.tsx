@@ -1,19 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  BookOpen,
-  CalendarDays,
-  FileText,
-  Globe2,
-  Heart,
-  Share2,
-  Star,
-} from "lucide-react";
+import { BookOpen, CalendarDays, FileText, Globe2, Star } from "lucide-react";
 
 import { BookActions } from "@/components/books/book-actions";
 
 import type { BookDetail as BookDetailData } from "@/lib/supabase/queries/books";
 import { FavoriteButton } from "./favorite-button";
+import { ShareBookButton } from "./share-book-button";
 
 type BookHeroProps = {
   book: BookDetailData;
@@ -91,26 +84,9 @@ export function BookHero({ book }: BookHeroProps) {
             {/* Main Info */}
             <div className="min-w-0 flex-1 py-2 sm:py-4 lg:py-8 xl:py-10">
               <div className="flex items-center gap-2 mb-4">
-              <FavoriteButton bookId={book.id} />
+                <FavoriteButton bookId={book.id} />
 
-                <button
-                  type="button"
-                  aria-label="اشتراک‌گذاری"
-                  className="
-                    inline-flex size-10 items-center justify-center
-                    rounded-xl
-                    border border-border/70
-                    bg-background/50
-                    text-muted-foreground
-                    backdrop-blur-md
-                    transition-all
-                    hover:border-orange-500/30
-                    hover:bg-orange-500/10
-                    hover:text-orange-500
-                  "
-                >
-                  <Share2 className="size-4" />
-                </button>
+                <ShareBookButton title={book.title} />
               </div>
               <div className="flex flex-wrap gap-2">
                 {book.genres.map((genre) => (
@@ -182,15 +158,7 @@ export function BookHero({ book }: BookHeroProps) {
           </div>
 
           {/* Book Info */}
-          <aside
-            className="
-  my-0 lg:my-4 xl:my-10
-  min-w-0 rounded-2xl
-  border border-border/60
-  bg-background/40 p-3 sm:p-4
-  backdrop-blur-md
-"
-          >
+          <aside className="my-0 lg:my-4 xl:my-10 min-w-0 rounded-2xl border border-border/60 bg-background/40 p-3 sm:p-4 backdrop-blur-md">
             <h2 className="text-sm font-bold">اطلاعات کتاب</h2>
 
             <div className="mt-4 divide-y divide-border/40">
