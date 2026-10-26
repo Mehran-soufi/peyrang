@@ -135,6 +135,86 @@ export async function getBooks(): Promise<BookListItem[]> {
   });
 }
 
+
+export type PaginatedBooksParams = {
+  query?: string;
+  sortBy?: "newest" | "highest_rating" | "most_rated" | "alphabetical";
+  genreSlug?: string;
+  authorSlug?: string;
+  language?: string;
+  yearFrom?: number;
+  yearTo?: number;
+  page?: number;
+  pageSize?: 12 | 24 | 48;
+};
+
+export type PaginatedBooksResult = {
+  books: BookListItem[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+};
+
+export async function getPaginatedBooks(
+  params: PaginatedBooksParams = {},
+): Promise<PaginatedBooksResult> {
+  const supabase = await createClient();
+
+  const page = Math.max(1, Math.floor(params.page ?? 1));
+  const pageSize = params.pageSize ?? 12;
+
+  const { data, error } = await supabase.rpc("get_paginated_books", {
+    p_query: params.query?.trim() || null,
+    p_sort_by: params.sortBy ?? "newest",
+    p_genre_slug: params.genreSlug || null,
+    p_author_slug: params.authorSlug || null,
+    p_language: params.language || null,
+    p_year_from: params.yearFrom ?? null,
+    p_year_to: params.yearTo ?? null,
+    p_page: page,
+    p_page_size: pageSize,
+  });
+
+  if (error) {
+    throw new Error(`Failed to fetch paginated books: ${error.message}`);
+  }
+
+const books: BookListItem[] = (data ?? []).map(
+  (book: {
+    id: string;
+    title: string;
+    slug: string;
+    cover: string | null;
+    author: string;
+    publication_year: number | null;
+    language: string | null;
+    genres: string[] | null;
+    rating_average: number | null;
+    rating_count: number;
+    total_count: number;
+  }) => ({
+    id: book.id,
+    title: book.title,
+    slug: book.slug,
+    cover: book.cover,
+    author: book.author,
+    publicationYear: book.publication_year,
+    language: book.language,
+    genres: book.genres ?? [],
+    ratingAverage: book.rating_average,
+    ratingCount: Number(book.rating_count),
+  }),
+);
+
+  return {
+    books,
+    totalCount: data?.length ? Number(data[0].total_count) : 0,
+    page,
+    pageSize,
+  };
+}
+
+
 export async function getBookBySlug(
   slug: string,
 ): Promise<BookDetail | null> {
@@ -335,4 +415,54 @@ export async function getPopularBooks(): Promise<BookListItem[]> {
     .sort((a, b) => b.score - a.score)
     .slice(0, 10)
     .map(({ book }) => book);
+}
+
+export type BookFilterOptions = {
+  genres: { id: string; name: string; slug: string }[];
+  authors: { id: string; name: string; slug: string }[];
+  languages: string[];
+  minYear: number | null;
+  maxYear: number | null;
+};
+
+export async function getBookFilterOptions(): Promise<BookFilterOptions> {
+  const supabase = await createClient();
+
+  const [genresResult, authorsResult, booksResult] = await Promise.all([
+    supabase.from("genres").select("id, name, slug").order("name"),
+    supabase.from("authors").select("id, name, slug").order("name"),
+    supabase.from("books").select("language, publication_year"),
+  ]);
+
+  if (genresResult.error) {
+    throw new Error(`Failed to fetch genres: ${genresResult.error.message}`);
+  }
+
+  if (authorsResult.error) {
+    throw new Error(`Failed to fetch authors: ${authorsResult.error.message}`);
+  }
+
+  if (booksResult.error) {
+    throw new Error(`Failed to fetch book filter options: ${booksResult.error.message}`);
+  }
+
+  const years = (booksResult.data ?? [])
+    .map((book) => book.publication_year)
+    .filter((year): year is number => year !== null);
+
+  const languages = [
+    ...new Set(
+      (booksResult.data ?? [])
+        .map((book) => book.language?.trim())
+        .filter((language): language is string => Boolean(language)),
+    ),
+  ].sort((a, b) => a.localeCompare(b, "fa"));
+
+  return {
+    genres: genresResult.data ?? [],
+    authors: authorsResult.data ?? [],
+    languages,
+    minYear: years.length ? Math.min(...years) : null,
+    maxYear: years.length ? Math.max(...years) : null,
+  };
 }
