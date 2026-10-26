@@ -5,6 +5,8 @@ import { BookHeart, MessageSquareText, UserRound } from "lucide-react";
 import { getMyFavorites, getMyReviews } from "@/lib/supabase/queries/profile";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileEditor } from "@/features/profile/components/profile-editor";
+import { FavoriteBooks } from "@/features/profile/components/favorite-books";
+import { FavoriteCount } from "@/features/profile/components/favorite-count";
 
 const reviewStatusLabels: Record<string, string> = {
   approved: "تأیید شده",
@@ -107,7 +109,7 @@ export default async function ProfilePage() {
             <BookHeart className="size-5" />
             <span className="text-sm">کتاب‌های موردعلاقه</span>
           </div>
-          <p className="mt-3 text-2xl font-bold">{favorites.length}</p>
+         <FavoriteCount initialCount={favorites.length} />
         </div>
       </section>
 
@@ -173,65 +175,7 @@ export default async function ProfilePage() {
       </section>
 
       <section className="mt-10">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-bold">کتاب‌های موردعلاقه</h2>
-          <span className="text-sm text-muted-foreground">
-            {favorites.length} کتاب
-          </span>
-        </div>
-
-        {favorites.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed p-8 text-center">
-            <BookHeart className="mx-auto size-8 text-muted-foreground" />
-            <p className="mt-3 font-medium">
-              هنوز کتابی به علاقه‌مندی‌ها اضافه نکرده‌اید
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              کتاب‌های موردعلاقه‌تان را ذخیره کنید تا اینجا در دسترس باشند.
-            </p>
-            <Link
-              href="/books"
-              className="mt-4 inline-flex text-sm font-medium text-primary hover:underline"
-            >
-              کشف کتاب‌ها
-            </Link>
-          </div>
-        ) : (
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-            {favorites.map((favorite) => (
-              <article
-                key={`${favorite.book?.id ?? favorite.createdAt}`}
-                className="overflow-hidden rounded-2xl border bg-card/60 transition-colors hover:border-primary/40"
-              >
-                {favorite.book ? (
-                  <Link href={`/books/${favorite.book.slug}`} className="block">
-                    {favorite.book.cover ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={favorite.book.cover}
-                        alt={favorite.book.title}
-                        className="aspect-3/4 w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex aspect-3/4 items-center justify-center bg-muted">
-                        <BookHeart className="size-8 text-muted-foreground" />
-                      </div>
-                    )}
-                    <div className="p-3">
-                      <h3 className="line-clamp-2 text-sm font-medium">
-                        {favorite.book.title}
-                      </h3>
-                    </div>
-                  </Link>
-                ) : (
-                  <p className="p-3 text-sm text-muted-foreground">
-                    اطلاعات کتاب در دسترس نیست.
-                  </p>
-                )}
-              </article>
-            ))}
-          </div>
-        )}
+        <FavoriteBooks initialFavorites={favorites} />
       </section>
     </div>
   );

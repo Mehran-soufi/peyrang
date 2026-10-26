@@ -522,9 +522,9 @@ export function BookRating({ bookId, mode }: BookRatingProps) {
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <p className="text-sm font-bold">
-                          {reviewAuthors[review.user_id]?.display_name ||
-  reviewAuthors[review.user_id]?.username ||
-  "کاربر پی‌رنگ"}
+                            {reviewAuthors[review.user_id]?.display_name ||
+                              reviewAuthors[review.user_id]?.username ||
+                              "کاربر پی‌رنگ"}
                           </p>
 
                           {(() => {
