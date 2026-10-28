@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, UserRound } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, UserRound } from "lucide-react";
 
 import type { BookDetail as BookDetailData } from "@/lib/supabase/queries/books";
 
@@ -19,12 +20,49 @@ export function BookAuthor({ book }: BookAuthorProps) {
         </div>
 
         <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-center">
-          <div className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-orange-500/10 ring-1 ring-orange-500/15">
-            <UserRound className="size-8 text-orange-500" />
+          <div className="relative flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-orange-500/10 ring-1 ring-orange-500/15 sm:size-28">
+            {book.author.avatarUrl ? (
+              <Image
+                src={book.author.avatarUrl}
+                alt={book.author.name}
+                fill
+                unoptimized
+                sizes="112px"
+                className="object-cover"
+              />
+            ) : (
+              <UserRound className="size-9 text-orange-500" aria-hidden="true" />
+            )}
           </div>
 
           <div className="min-w-0 flex-1">
             <h3 className="text-lg font-bold">{book.author.name}</h3>
+            {(book.author.nationality || book.author.birthYear) && (
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                {book.author.nationality ? (
+                  <span className="inline-flex items-center gap-1.5">
+                    <MapPin className="size-3.5 text-orange-500/80" aria-hidden="true" />
+                    {book.author.nationality}
+                  </span>
+                ) : null}
+                {book.author.birthYear ? (
+                  <span className="inline-flex items-center gap-1.5">
+                    <CalendarDays className="size-3.5 text-orange-500/80" aria-hidden="true" />
+                    <span dir="ltr">
+                      {book.author.birthYear.toLocaleString("fa-IR")}
+                      {book.author.deathYear
+                        ? ` — ${book.author.deathYear.toLocaleString("fa-IR")}`
+                        : ""}
+                    </span>
+                  </span>
+                ) : null}
+              </div>
+            )}
+            {book.author.bio ? (
+              <p className="mt-3 line-clamp-4 max-w-3xl text-sm leading-7 text-muted-foreground">
+                {book.author.bio}
+              </p>
+            ) : null}
           </div>
 
           <Link

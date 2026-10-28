@@ -1,16 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-
-const AUTHOR_IMAGE_PATHS: Record<string, string> = {
-  "iraj-pezeshkzad": "/assets/images/authors/iraj-pezeshkzad.webp",
-  "bozorg-alavi": "/assets/images/authors/bozorg-alavi.webp",
-  "zoya-pirzad": "/assets/images/authors/zoya-pirzad.webp",
-  "paulo-coelho": "/assets/images/authors/paulo-coelho.webp",
-  "abbas-maroufi": "/assets/images/authors/abbas-maroufi.webp",
-};
-
-function getAuthorImage(slug: string, avatarUrl: string | null) {
-  return avatarUrl ?? AUTHOR_IMAGE_PATHS[slug] ?? null;
-}
+import { getAuthorImagePath } from "@/lib/author-images";
 
 export type AuthorSummary = {
   id: string;
@@ -81,7 +70,7 @@ export async function getAuthors(): Promise<AuthorSummary[]> {
     name: author.name,
     slug: author.slug,
     bio: author.bio,
-    avatarUrl: getAuthorImage(author.slug, author.avatar_url),
+    avatarUrl: getAuthorImagePath(author.slug, author.avatar_url),
     nationality: author.nationality,
     birthYear: author.birth_year,
     deathYear: author.death_year,
@@ -129,7 +118,7 @@ export async function getAuthorBySlug(
     name: data.name,
     slug: data.slug,
     bio: data.bio,
-    avatarUrl: getAuthorImage(data.slug, data.avatar_url),
+    avatarUrl: getAuthorImagePath(data.slug, data.avatar_url),
     nationality: data.nationality,
     birthYear: data.birth_year,
     deathYear: data.death_year,

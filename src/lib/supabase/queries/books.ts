@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getAuthorImagePath } from "@/lib/author-images";
 
 export type BookListItem = {
   id: string;
@@ -32,6 +33,9 @@ export type BookDetail = {
     slug: string;
     bio: string | null;
     avatarUrl: string | null;
+    nationality: string | null;
+    birthYear: number | null;
+    deathYear: number | null;
   } | null;
 
   genres: {
@@ -60,6 +64,10 @@ type NestedEntity = {
 type AuthorEntity = NestedEntity & {
   bio: string | null;
   avatar_url: string | null;
+  nationality: string | null;
+  birth_year: number | null;
+  death_year: number | null;
+  homepage_image: string | null;
 };
 
 function getFirstEntity<T>(
@@ -238,7 +246,11 @@ export async function getBookBySlug(
           name,
           slug,
           bio,
-          avatar_url
+          avatar_url,
+          nationality,
+          birth_year,
+          death_year,
+          homepage_image
         )
       ),
       book_genres (
@@ -308,7 +320,12 @@ export async function getBookBySlug(
         name: author.name,
         slug: author.slug,
         bio: author.bio,
-        avatarUrl: author.avatar_url,
+        avatarUrl:
+          author.homepage_image ??
+          getAuthorImagePath(author.slug, author.avatar_url),
+        nationality: author.nationality,
+        birthYear: author.birth_year,
+        deathYear: author.death_year,
       }
       : null,
     genres: data.book_genres
