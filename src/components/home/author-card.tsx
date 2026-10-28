@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { BookOpen, CalendarDays, MapPin } from "lucide-react";
+import { BookOpen, CalendarDays, MapPin, UserRound } from "lucide-react";
 
 type AuthorCardProps = {
   name: string;
@@ -7,7 +7,7 @@ type AuthorCardProps = {
   birthYear: number;
   deathYear?: number;
   booksCount: number;
-  image: string;
+  image?: string | null;
 };
 
 export function AuthorCard({
@@ -22,7 +22,7 @@ export function AuthorCard({
     <article className="group w-full min-w-0">
       <div
         className="
-          relative flex h-52 w-full overflow-hidden rounded-2xl
+          relative flex min-h-52 w-full overflow-hidden rounded-2xl
           border border-border/60
           bg-background/70
           shadow-sm
@@ -35,18 +35,24 @@ export function AuthorCard({
         "
       >
         {/* Author Image */}
-        <div className="relative h-full w-[42%] shrink-0 overflow-hidden">
-          <Image
-            src={image}
-            alt={name}
-            fill
-            sizes="(max-width: 640px) 150px, 220px"
-            className="
+        <div className="relative min-h-52 w-[42%] shrink-0 overflow-hidden bg-primary/10">
+          {image ? (
+            <Image
+              src={image}
+              alt={name}
+              fill
+              sizes="(max-width: 640px) 150px, 220px"
+              className="
               object-cover
               transition-transform duration-500
               group-hover:scale-[1.04]
             "
-          />
+            />
+          ) : (
+            <div className="flex h-full min-h-52 items-center justify-center text-primary">
+              <UserRound className="size-12" aria-hidden="true" />
+            </div>
+          )}
 
           <div
             aria-hidden="true"
@@ -58,7 +64,7 @@ export function AuthorCard({
         </div>
 
         {/* Author Information */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between p-4">
+        <div className="flex min-w-0 flex-1 flex-col justify-between gap-3 p-4">
           <div className="min-w-0">
             <p className="mb-1 text-[11px] font-semibold text-orange-500/80">
               نویسنده
@@ -84,14 +90,14 @@ export function AuthorCard({
             <div className="flex items-center gap-2">
               <CalendarDays className="size-3.5 shrink-0 text-orange-500/80" />
               <span dir="ltr">
-                {birthYear}
+                {birthYear || "—"}
                 {deathYear ? ` — ${deathYear}` : ""}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
               <BookOpen className="size-3.5 shrink-0 text-orange-500/80" />
-              <span>{booksCount} کتاب در پی‌رنگ</span>
+              <span>{booksCount.toLocaleString("fa-IR")} کتاب در پی‌رنگ</span>
             </div>
           </div>
         </div>
