@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { ArrowLeft, LibraryBig } from "lucide-react";
+import Link from "next/link";
 
 import { AuthorCard } from "@/components/home/author-card";
 import {
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/carousel";
 
 type Author = {
+  slug: string;
   name: string;
   nationality: string;
   birthYear: number;
@@ -65,8 +67,8 @@ export function AuthorSection({
             </p>
           </div>
 
-          <button
-            type="button"
+          <Link
+            href="/authors"
             className="
               hidden shrink-0 items-center gap-1.5
               rounded-xl
@@ -86,7 +88,7 @@ export function AuthorSection({
           >
             <span>{viewAllLabel}</span>
             <ArrowLeft className="size-3.5" />
-          </button>
+          </Link>
         </div>
 
         {/* Authors Carousel */}
@@ -102,11 +104,17 @@ export function AuthorSection({
             <CarouselContent className="-ml-4">
               {authors.map((author) => (
                 <CarouselItem
-                  key={author.name}
+                  key={author.slug}
                   dir="rtl"
                   className="basis-80 pl-4 sm:basis-96 lg:basis-105"
                 >
-                  <AuthorCard {...author} />
+                  <Link
+                    href={`/authors/${author.slug}`}
+                    aria-label={`دیدن صفحهٔ ${author.name}`}
+                    className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  >
+                    <AuthorCard {...author} />
+                  </Link>
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -142,8 +150,8 @@ export function AuthorSection({
 
         {/* Mobile View All */}
         <div className="mt-6 flex justify-center sm:hidden">
-          <button
-            type="button"
+          <Link
+            href="/authors"
             className="
               inline-flex items-center gap-1.5
               rounded-xl
@@ -162,7 +170,7 @@ export function AuthorSection({
           >
             <span>{viewAllLabel} نویسندگان</span>
             <ArrowLeft className="size-3.5" />
-          </button>
+          </Link>
         </div>
       </div>
     </section>
