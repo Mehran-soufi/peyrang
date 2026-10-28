@@ -8,6 +8,7 @@ import { BookAuthor } from "@/components/books/book-author";
 import { BookDetailTabs } from "@/components/books/book-detail-tabs";
 import { BookHero } from "@/components/books/book-hero";
 import { BookRating } from "@/components/books/book-rating";
+import { SimilarBooks } from "@/components/books/similar-books";
 
 import type { BookDetail as BookDetailData } from "@/lib/supabase/queries/books";
 
@@ -17,13 +18,20 @@ type BookDetailProps = {
 
 export function BookDetail({ book }: BookDetailProps) {
   const [activeTab, setActiveTab] = useState("about");
+  const [hasOpenedSimilarBooks, setHasOpenedSimilarBooks] = useState(false);
 
   return (
     <div className="pb-16 w-[95%] mx-auto">
       <BookHero book={book} />
 
       <div className="mx-auto w-full px-4 sm:px-6">
-        <BookDetailTabs activeTab={activeTab} onChange={setActiveTab} />
+        <BookDetailTabs
+          activeTab={activeTab}
+          onChange={(tab) => {
+            setActiveTab(tab);
+            if (tab === "similar") setHasOpenedSimilarBooks(true);
+          }}
+        />
 
         <div className="mt-6">
           {activeTab === "about" && (
@@ -44,14 +52,10 @@ export function BookDetail({ book }: BookDetailProps) {
             <BookRating bookId={book.id} mode="interactive" />
           )}
 
-          {activeTab === "similar" && (
-            <section className="rounded-2xl border border-border/60 bg-background/40 p-6">
-              <h2 className="text-lg font-black">کتاب‌های مشابه</h2>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                کتاب‌های مشابه در این بخش نمایش داده خواهند شد.
-              </p>
-            </section>
+          {hasOpenedSimilarBooks && (
+            <div className={activeTab === "similar" ? "" : "hidden"}>
+              <SimilarBooks slug={book.slug} />
+            </div>
           )}
 
           {activeTab === "author" && <BookAuthor book={book} />}
