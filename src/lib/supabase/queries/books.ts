@@ -55,6 +55,8 @@ export type BookDetail = {
   }[];
 };
 
+export type SimilarBook = BookListItem;
+
 type NestedEntity = {
   id: string;
   name: string;
@@ -141,6 +143,141 @@ export async function getBooks(): Promise<BookListItem[]> {
       ratingCount,
     };
   });
+}
+
+export async function getSimilarBooks(
+  slug: string,
+  limit = 8,
+): Promise<SimilarBook[]> {
+  const supabase = await createClient();
+  const { data: currentBook, error: currentBookError } = await supabase
+    .from("books")
+    .select(`
+      id,
+      book_authors(author_id, author:authors(id, name)),
+      book_genres(genre_id, genre:genres(id, name))
+    `)
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (currentBookError) {
+    throw new Error(`Failed to fetch the current book: ${currentBookError.message}`);
+  }
+
+  if (!currentBook) return [];
+
+  const genreIds = currentBook.book_genres.map((relation) => relation.genre_id);
+  const authorIds = currentBook.book_authors.map((relation) => relation.author_id);
+  const currentAuthorNames = new Set(
+    currentBook.book_authors
+      .map((relation) => getFirstEntity(relation.author)?.name)
+      .filter((name): name is string => Boolean(name)),
+  );
+
+  const candidateIdSet = new Set<string>();
+  const candidateLookups = await Promise.all([
+    genreIds.length
+      ? supabase
+          .from("book_genres")
+          .select("book_id")
+          .in("genre_id", genreIds)
+          .neq("book_id", currentBook.id)
+          .limit(250)
+      : Promise.resolve({ data: [], error: null }),
+    authorIds.length
+      ? supabase
+          .from("book_authors")
+          .select("book_id")
+          .in("author_id", authorIds)
+          .neq("book_id", currentBook.id)
+          .limit(250)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  const lookupError = candidateLookups.find((result) => result.error)?.error;
+  if (lookupError) {
+    throw new Error(`Failed to find similar book candidates: ${lookupError.message}`);
+  }
+
+  for (const result of candidateLookups) {
+    for (const relation of result.data ?? []) {
+      candidateIdSet.add(relation.book_id);
+    }
+  }
+
+  if (candidateIdSet.size === 0) return [];
+
+  const { data: candidates, error: candidatesError } = await supabase
+    .from("books")
+    .select(`
+      id,
+      title,
+      slug,
+      cover_url,
+      publication_year,
+      language,
+      book_authors(author:authors(id, name)),
+      book_genres(genre_id, genre:genres(id, name)),
+      ratings(rating)
+    `)
+    .in("id", [...candidateIdSet])
+    .limit(250);
+
+  if (candidatesError) {
+    throw new Error(`Failed to fetch similar books: ${candidatesError.message}`);
+  }
+
+  const currentGenreIds = new Set(genreIds);
+  const ranked = (candidates ?? [])
+    .map((candidate) => {
+      const sharedGenres = candidate.book_genres
+        .filter((relation) => currentGenreIds.has(relation.genre_id))
+        .map((relation) => getFirstEntity(relation.genre)?.name)
+        .filter((name): name is string => Boolean(name));
+      const candidateAuthorNames = candidate.book_authors
+        .map((relation) => getFirstEntity(relation.author)?.name)
+        .filter((name): name is string => Boolean(name));
+      const sharesAuthor = candidateAuthorNames.some((name) =>
+        currentAuthorNames.has(name),
+      );
+
+      const similarityScore = sharedGenres.length * 3 + (sharesAuthor ? 1.5 : 0);
+      const ratingCount = candidate.ratings.length;
+      const ratingAverage = ratingCount
+        ? candidate.ratings.reduce((sum, item) => sum + item.rating, 0) / ratingCount
+        : null;
+      const confidenceWeightedRating = ratingAverage === null
+        ? 0
+        : ratingAverage * (ratingCount / (ratingCount + 5));
+      return {
+        book: {
+          id: candidate.id,
+          title: candidate.title,
+          slug: candidate.slug,
+          cover: candidate.cover_url,
+          author: candidateAuthorNames[0] ?? "نویسنده نامشخص",
+          publicationYear: candidate.publication_year,
+          language: candidate.language,
+          genres: candidate.book_genres
+            .map((relation) => getFirstEntity(relation.genre)?.name)
+            .filter((name): name is string => Boolean(name)),
+          ratingAverage,
+          ratingCount,
+        },
+        similarityScore,
+        confidenceWeightedRating,
+      };
+    })
+    .filter((item) => item.similarityScore > 0)
+    .sort(
+      (a, b) =>
+        b.similarityScore - a.similarityScore ||
+        b.confidenceWeightedRating - a.confidenceWeightedRating ||
+        b.book.ratingCount - a.book.ratingCount ||
+        a.book.title.localeCompare(b.book.title, "fa"),
+    );
+
+  return ranked.slice(0, Math.max(1, limit)).map(({ book }) => book);
 }
 
 
