@@ -1,9 +1,11 @@
 
 "use client";
 
+import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 
 import { Header } from "@/components/layout/header";
+import { NavigationProgress } from "@/components/layout/navigation-progress";
 import { SiteNavigation } from "@/components/layout/site-navigation";
 import { useNavigationVisibility } from "@/components/layout/navigation-visibility-provider";
 
@@ -29,6 +31,10 @@ export function PublicNavigation({
 
   return (
     <>
+      <Suspense fallback={null}>
+        <NavigationProgress />
+      </Suspense>
+
       <Header
         isAuthenticated={isAuthenticated}
         account={account}
