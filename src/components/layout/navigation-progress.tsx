@@ -9,23 +9,28 @@ export function NavigationProgress() {
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const wasLoading = useRef(false);
+  const startedAt = useRef<number | null>(null);
   const advanceTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const fallbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const completeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     function clearTimers() {
       if (advanceTimer.current) clearInterval(advanceTimer.current);
       if (fallbackTimer.current) clearTimeout(fallbackTimer.current);
+      if (completeTimer.current) clearTimeout(completeTimer.current);
       if (hideTimer.current) clearTimeout(hideTimer.current);
       advanceTimer.current = null;
       fallbackTimer.current = null;
+      completeTimer.current = null;
       hideTimer.current = null;
     }
 
     function startProgress() {
       clearTimers();
       wasLoading.current = true;
+      startedAt.current = Date.now();
       setIsLoading(true);
       setProgress(12);
 
@@ -43,6 +48,7 @@ export function NavigationProgress() {
       if (fallbackTimer.current) clearTimeout(fallbackTimer.current);
       advanceTimer.current = null;
       fallbackTimer.current = null;
+      startedAt.current = null;
       wasLoading.current = false;
       setProgress(100);
       hideTimer.current = setTimeout(() => {
@@ -103,11 +109,17 @@ export function NavigationProgress() {
       advanceTimer.current = null;
       fallbackTimer.current = null;
       wasLoading.current = false;
-      setProgress(100);
-      hideTimer.current = setTimeout(() => {
-        setIsLoading(false);
-        setProgress(0);
-      }, 240);
+      const elapsed = Date.now() - (startedAt.current ?? Date.now());
+      const remaining = Math.max(0, 600 - elapsed);
+      completeTimer.current = setTimeout(() => {
+        completeTimer.current = null;
+        startedAt.current = null;
+        setProgress(100);
+        hideTimer.current = setTimeout(() => {
+          setIsLoading(false);
+          setProgress(0);
+        }, 240);
+      }, remaining);
     }
   }, [pathname, query]);
 
