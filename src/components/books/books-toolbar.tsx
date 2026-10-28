@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { RotateCcw, SlidersHorizontal } from "lucide-react";
 
@@ -68,24 +68,21 @@ export function BooksToolbar({
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
 
-  const [sort, setSort] = useState("newest");
-  const [genre, setGenre] = useState("all");
-  const [author, setAuthor] = useState("all");
-  const [language, setLanguage] = useState("all");
-  const [yearFrom, setYearFrom] = useState("");
-  const [yearTo, setYearTo] = useState("");
-  const [pageSize, setPageSize] = useState("12");
-
-  useEffect(() => {
-    setSort(searchParams.get("sort") ?? "newest");
-    setGenre(searchParams.get("genre") ?? "all");
-    setAuthor(searchParams.get("author") ?? "all");
-    setLanguage(searchParams.get("language") ?? "all");
-    setYearFrom(searchParams.get("yearFrom") ?? "");
-    setYearTo(searchParams.get("yearTo") ?? "");
-    setPageSize(searchParams.get("pageSize") ?? "12");
-    setPending(false);
-  }, [searchParams]);
+  const [sort, setSort] = useState(() => searchParams.get("sort") ?? "newest");
+  const [genre, setGenre] = useState(() => searchParams.get("genre") ?? "all");
+  const [author, setAuthor] = useState(
+    () => searchParams.get("author") ?? "all",
+  );
+  const [language, setLanguage] = useState(
+    () => searchParams.get("language") ?? "all",
+  );
+  const [yearFrom, setYearFrom] = useState(
+    () => searchParams.get("yearFrom") ?? "",
+  );
+  const [yearTo, setYearTo] = useState(() => searchParams.get("yearTo") ?? "");
+  const [pageSize, setPageSize] = useState(
+    () => searchParams.get("pageSize") ?? "12",
+  );
 
   function applyFilters() {
     const from = yearFrom.trim();
