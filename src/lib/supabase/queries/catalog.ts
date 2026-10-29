@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { unstable_cache } from "next/cache";
+import { createPublicClient } from "@/lib/supabase/public";
 import { getAuthorImagePath } from "@/lib/author-images";
 
 export type AuthorSummary = {
@@ -41,8 +42,8 @@ export type AdaptationSummary = {
   } | null;
 };
 
-export async function getAuthors(): Promise<AuthorSummary[]> {
-  const supabase = await createClient();
+async function fetchAuthors(): Promise<AuthorSummary[]> {
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("authors")
     .select(`
@@ -84,10 +85,14 @@ export async function getAuthors(): Promise<AuthorSummary[]> {
   }));
 }
 
-export async function getAuthorBySlug(
+export const getAuthors = unstable_cache(fetchAuthors, ["public-authors"], {
+  revalidate: 60,
+});
+
+async function fetchAuthorBySlug(
   slug: string,
 ): Promise<AuthorSummary | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("authors")
     .select(`
@@ -132,8 +137,14 @@ export async function getAuthorBySlug(
   };
 }
 
-export async function getFeaturedAuthors(): Promise<FeaturedAuthor[]> {
-  const supabase = await createClient();
+export const getAuthorBySlug = unstable_cache(
+  fetchAuthorBySlug,
+  ["public-author-detail"],
+  { revalidate: 60 },
+);
+
+async function fetchFeaturedAuthors(): Promise<FeaturedAuthor[]> {
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("authors")
     .select(
@@ -160,8 +171,14 @@ export async function getFeaturedAuthors(): Promise<FeaturedAuthor[]> {
   }));
 }
 
-export async function getAdaptations(): Promise<AdaptationSummary[]> {
-  const supabase = await createClient();
+export const getFeaturedAuthors = unstable_cache(
+  fetchFeaturedAuthors,
+  ["public-featured-authors"],
+  { revalidate: 60 },
+);
+
+async function fetchAdaptations(): Promise<AdaptationSummary[]> {
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("adaptations")
     .select("id, title, type, release_year, description, poster_url, director, book_id")
@@ -211,3 +228,9 @@ export async function getAdaptations(): Promise<AdaptationSummary[]> {
     book: booksById.get(adaptation.book_id) ?? null,
   }));
 }
+
+export const getAdaptations = unstable_cache(
+  fetchAdaptations,
+  ["public-adaptations"],
+  { revalidate: 60 },
+);

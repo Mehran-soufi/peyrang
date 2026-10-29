@@ -1,5 +1,5 @@
 
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export type SearchBookResult = {
   id: string;
@@ -36,7 +36,7 @@ export async function searchBooks(
     return [];
   }
 
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   // جست‌وجو در عنوان اصلی کتاب
   const { data: titleMatches, error: titleError } = await supabase

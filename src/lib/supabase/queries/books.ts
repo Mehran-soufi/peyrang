@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { unstable_cache } from "next/cache";
+import { createPublicClient } from "@/lib/supabase/public";
 import { getAuthorImagePath } from "@/lib/author-images";
 
 export type BookListItem = {
@@ -79,8 +80,8 @@ function getFirstEntity<T>(
 }
 
 
-export async function getBooks(): Promise<BookListItem[]> {
-  const supabase = await createClient();
+async function fetchBooks(): Promise<BookListItem[]> {
+  const supabase = createPublicClient();
 
   const { data, error } = await supabase
     .from("books")
@@ -145,11 +146,15 @@ export async function getBooks(): Promise<BookListItem[]> {
   });
 }
 
-export async function getSimilarBooks(
+export const getBooks = unstable_cache(fetchBooks, ["public-books"], {
+  revalidate: 60,
+});
+
+async function fetchSimilarBooks(
   slug: string,
   limit = 8,
 ): Promise<SimilarBook[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data: currentBook, error: currentBookError } = await supabase
     .from("books")
     .select(`
@@ -280,6 +285,12 @@ export async function getSimilarBooks(
   return ranked.slice(0, Math.max(1, limit)).map(({ book }) => book);
 }
 
+export const getSimilarBooks = unstable_cache(
+  fetchSimilarBooks,
+  ["public-similar-books"],
+  { revalidate: 60 },
+);
+
 
 export type PaginatedBooksParams = {
   query?: string;
@@ -300,10 +311,10 @@ export type PaginatedBooksResult = {
   pageSize: number;
 };
 
-export async function getPaginatedBooks(
+async function fetchPaginatedBooks(
   params: PaginatedBooksParams = {},
 ): Promise<PaginatedBooksResult> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const page = Math.max(1, Math.floor(params.page ?? 1));
   const pageSize = params.pageSize ?? 12;
@@ -359,11 +370,17 @@ const books: BookListItem[] = (data ?? []).map(
   };
 }
 
+export const getPaginatedBooks = unstable_cache(
+  fetchPaginatedBooks,
+  ["public-paginated-books"],
+  { revalidate: 60 },
+);
 
-export async function getBookBySlug(
+
+async function fetchBookBySlug(
   slug: string,
 ): Promise<BookDetail | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data, error } = await supabase
     .from("books")
@@ -405,7 +422,8 @@ export async function getBookBySlug(
   description,
   poster_url,
   director
-)
+      ),
+      ratings(rating)
     `)
     .eq("slug", slug)
     .maybeSingle();
@@ -418,22 +436,11 @@ export async function getBookBySlug(
     return null;
   }
 
-  const { data: ratings, error: ratingsError } = await supabase
-    .from("ratings")
-    .select("rating")
-    .eq("book_id", data.id);
-
-  if (ratingsError) {
-    throw new Error(
-      `Failed to fetch book ratings: ${ratingsError.message}`,
-    );
-  }
-
-  const ratingCount = ratings.length;
+  const ratingCount = data.ratings.length;
 
   const ratingAverage =
     ratingCount > 0
-      ? ratings.reduce((sum, item) => sum + item.rating, 0) /
+      ? data.ratings.reduce((sum, item) => sum + item.rating, 0) /
       ratingCount
       : null;
 
@@ -498,6 +505,12 @@ export async function getBookBySlug(
   };
 }
 
+export const getBookBySlug = unstable_cache(
+  fetchBookBySlug,
+  ["public-book-detail"],
+  { revalidate: 60 },
+);
+
 
 export type LibraryStats = {
   books: number;
@@ -505,8 +518,8 @@ export type LibraryStats = {
   adaptations: number;
 };
 
-export async function getLibraryStats(): Promise<LibraryStats> {
-  const supabase = await createClient();
+async function fetchLibraryStats(): Promise<LibraryStats> {
+  const supabase = createPublicClient();
 
   const [booksResult, authorsResult, adaptationsResult] =
     await Promise.all([
@@ -536,6 +549,12 @@ export async function getLibraryStats(): Promise<LibraryStats> {
     adaptations: adaptationsResult.count ?? 0,
   };
 }
+
+export const getLibraryStats = unstable_cache(
+  fetchLibraryStats,
+  ["public-library-stats"],
+  { revalidate: 60 },
+);
 
 export async function getPopularBooks(): Promise<BookListItem[]> {
   const books = await getBooks();
@@ -579,8 +598,8 @@ export type BookFilterOptions = {
   maxYear: number | null;
 };
 
-export async function getBookFilterOptions(): Promise<BookFilterOptions> {
-  const supabase = await createClient();
+async function fetchBookFilterOptions(): Promise<BookFilterOptions> {
+  const supabase = createPublicClient();
 
   const [genresResult, authorsResult, booksResult] = await Promise.all([
     supabase.from("genres").select("id, name, slug").order("name"),
@@ -620,3 +639,9 @@ export async function getBookFilterOptions(): Promise<BookFilterOptions> {
     maxYear: years.length ? Math.max(...years) : null,
   };
 }
+
+export const getBookFilterOptions = unstable_cache(
+  fetchBookFilterOptions,
+  ["public-book-filter-options"],
+  { revalidate: 60 },
+);

@@ -13,25 +13,26 @@ export default async function PublicLayout({
   children: React.ReactNode;
 }>) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
 
-  const isAuthenticated = Boolean(user);
+  const userId = typeof claims?.sub === "string" ? claims.sub : null;
+  const email = typeof claims?.email === "string" ? claims.email : null;
+  const isAuthenticated = Boolean(userId);
   let account = null;
 
-  if (user) {
+  if (userId) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("display_name, username, role")
-      .eq("id", user.id)
+      .eq("id", userId)
       .maybeSingle();
 
     account = {
       displayName:
         profile?.display_name ||
         profile?.username ||
-        user.email?.split("@")[0] ||
+        email?.split("@")[0] ||
         "حساب کاربری",
       username: profile?.username ?? null,
       role: profile?.role ?? null,
