@@ -9,9 +9,13 @@ import { CategoriesSheet } from "@/features/categories/components/categories-she
 
 type MobileBottomNavProps = {
   isAuthenticated: boolean;
+  accountPending?: boolean;
 };
 
-export function MobileBottomNav({ isAuthenticated }: MobileBottomNavProps) {
+export function MobileBottomNav({
+  isAuthenticated,
+  accountPending = false,
+}: MobileBottomNavProps) {
   const pathname = usePathname();
 
   const isHomeActive = pathname === "/";
@@ -103,10 +107,19 @@ export function MobileBottomNav({ isAuthenticated }: MobileBottomNavProps) {
           }
         />
 
-        <Link
-          href={isAuthenticated ? "/profile" : "/login"}
-          aria-current={isProfileActive ? "page" : undefined}
-          className={`
+        {accountPending ? (
+          <div
+            aria-label="در حال بارگذاری حساب کاربری"
+            className="flex h-full min-w-0 flex-1 animate-pulse flex-col items-center justify-center gap-1 rounded-xl text-muted-foreground"
+          >
+            <UserRound className="size-5" />
+            <span className="h-2.5 w-12 rounded bg-muted" />
+          </div>
+        ) : (
+          <Link
+            href={isAuthenticated ? "/profile" : "/login"}
+            aria-current={isProfileActive ? "page" : undefined}
+            className={`
             flex h-full min-w-0 flex-1 flex-col
             items-center justify-center gap-0.5
             rounded-xl
@@ -117,12 +130,13 @@ export function MobileBottomNav({ isAuthenticated }: MobileBottomNavProps) {
                 ? "bg-primary/10 text-primary"
                 : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
             }
-          `}
-        >
-          <UserRound className="size-5" />
+            `}
+          >
+            <UserRound className="size-5" />
 
-          <span>{isAuthenticated ? "پروفایل" : "ورود | ثبت‌نام"}</span>
-        </Link>
+            <span>{isAuthenticated ? "پروفایل" : "ورود | ثبت‌نام"}</span>
+          </Link>
+        )}
       </div>
     </nav>
   );

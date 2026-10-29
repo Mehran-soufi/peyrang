@@ -26,6 +26,7 @@ type AccountInfo = {
 type HeaderProps = {
   isAuthenticated: boolean;
   account: AccountInfo | null;
+  accountPending?: boolean;
   isHome: boolean;
   isScrolled: boolean;
 };
@@ -36,6 +37,7 @@ const menuItemClass =
 export function Header({
   isAuthenticated,
   account,
+  accountPending = false,
   isHome,
   isScrolled,
 }: HeaderProps) {
@@ -122,7 +124,12 @@ export function Header({
 
             <div className="h-6 w-px bg-border/60" />
 
-            {isAuthenticated ? (
+            {accountPending ? (
+              <div
+                aria-label="در حال بارگذاری حساب کاربری"
+                className="h-10 w-36 animate-pulse rounded-xl bg-muted/70"
+              />
+            ) : isAuthenticated ? (
               <div ref={menuRef} className="relative">
                 <button
                   type="button"
