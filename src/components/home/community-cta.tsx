@@ -1,18 +1,19 @@
 import Image from "next/image";
-import { ArrowLeft, BookOpen, PenLine, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, BookOpen, Clapperboard, UserRound, Sparkles } from "lucide-react";
 
 const activities = [
   {
-    label: "نوشتن نقد",
-    icon: PenLine,
+    label: "زندگی‌نامه نویسندگان",
+    icon: UserRound,
   },
   {
     label: "خلاصه کتاب",
     icon: BookOpen,
   },
   {
-    label: "معرفی کتاب",
-    icon: Sparkles,
+    label: "معرفی اقتباس",
+    icon: Clapperboard,
   },
 ];
 
@@ -66,8 +67,8 @@ export function CommunityCta() {
 
             {/* Description */}
             <p className="mt-4 max-w-xl text-sm leading-7 text-white/70 sm:text-base sm:leading-8">
-              نقدت را بنویس، کتابی معرفی کن یا تجربه‌ات را با دیگر خواننده‌ها به
-              اشتراک بگذار.
+              خلاصهٔ کتاب، زندگی‌نامهٔ نویسنده یا معرفی یک اقتباس را بنویس و به
+              کامل‌تر شدن دنیای پی‌رنگ کمک کن.
             </p>
 
             {/* Activities */}
@@ -84,13 +85,13 @@ export function CommunityCta() {
             </div>
 
             {/* CTA */}
-            <button
-              type="button"
+            <Link
+              href="/contribute"
               className="mt-7 inline-flex h-11 items-center gap-2 rounded-xl bg-orange-500 px-5 text-sm font-bold text-white shadow-lg shadow-orange-950/30 transition-all duration-300 hover:bg-orange-400 hover:shadow-orange-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
             >
               <span>شروع مشارکت</span>
               <ArrowLeft className="size-4" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>
