@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, useTransition, type FormEvent } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { submitContribution } from "@/app/(public)/contribute/actions";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   BookOpen,
   Check,
-  ChevronLeft,
   Clapperboard,
   FileText,
   Lightbulb,
@@ -106,28 +106,62 @@ export function ContributionForm() {
   const [type, setType] = useState<ContributionType | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [brokenImages, setBrokenImages] = useState<string[]>([]);
-  const [showPreviewNotice, setShowPreviewNotice] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+
+  const formRef = useRef<HTMLFormElement>(null);
+
   const selectedType = contributionTypes.find((item) => item.id === type);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setShowPreviewNotice(true);
+
+    if (!type || isPending) return;
+
+    const formData = new FormData(event.currentTarget);
+    formData.set("type", type);
+
+
+    startTransition(async () => {
+      try {
+        const response = await submitContribution(formData);
+
+
+        if (response.success) {
+          formRef.current?.reset();
+
+          toast.success("مشارکت با موفقیت ثبت شد", {
+            description: "پس از بررسی مدیران، مشارکتت منتشر خواهد شد.",
+            duration: 5000,
+          });
+        } else {
+          toast.error("ثبت مشارکت انجام نشد", {
+            description: response.message,
+            duration: 5000,
+          });
+        }
+      } catch {
+        toast.error("خطا در برقراری ارتباط", {
+          description: "لطفاً اتصال اینترنت را بررسی کن و دوباره تلاش کن.",
+        });
+      }
+    });
   }
 
   function openForm(nextType: ContributionType) {
     setType(nextType);
-    setShowPreviewNotice(false);
     setIsOpen(true);
   }
 
   function handleOpenChange(open: boolean) {
+    if (isPending) return;
+
     setIsOpen(open);
+
     if (!open) {
       setType(null);
-      setShowPreviewNotice(false);
     }
   }
-
   return (
     <div className="mx-auto w-[95%]">
       <PageBreadcrumb items={[{ label: "مشارکت کاربران" }]} />
@@ -260,7 +294,7 @@ export function ContributionForm() {
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit}>
+              <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="grid gap-5 p-5 sm:p-6">
                   <label className="grid gap-2 text-sm font-semibold">
                     {selectedType.subjectLabel}
@@ -313,23 +347,22 @@ export function ContributionForm() {
                   </p>
                   <button
                     type="submit"
-                    className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 text-sm font-bold text-white shadow-lg shadow-orange-950/20 transition hover:bg-orange-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
+                    disabled={isPending}
+                    className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 text-sm font-bold text-white shadow-lg shadow-orange-950/20 transition hover:bg-orange-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    پیش‌نمایش ارسال برای بررسی
-                    <ArrowLeft className="size-4" />
+                    {isPending ? (
+                      <>
+                        <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                        در حال ثبت...
+                      </>
+                    ) : (
+                      <>
+                        ارسال برای بررسی
+                        <ArrowLeft className="size-4" />
+                      </>
+                    )}
                   </button>
                 </div>
-
-                {showPreviewNotice && (
-                  <p
-                    role="status"
-                    className="m-5 rounded-xl border border-border bg-muted/50 p-4 text-sm leading-6 text-muted-foreground sm:mx-6"
-                  >
-                    این پیش‌نمایش فرم را نشان می‌دهد؛ هنوز چیزی ذخیره یا ارسال
-                    نمی‌شود. برای دریافت واقعی مشارکت‌ها باید فرم به حساب کاربری
-                    و صف بررسی مدیر متصل شود.
-                  </p>
-                )}
               </form>
             </>
           )}

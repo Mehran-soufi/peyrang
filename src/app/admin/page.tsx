@@ -43,13 +43,23 @@ export default async function AdminDashboardPage() {
             </p>
           </div>
           <Link
-  href="/admin/reviews"
+            href="/admin/reviews"
+            className="rounded-2xl border bg-card p-5 transition-colors hover:border-orange-500/50"
+          >
+            <h2 className="font-bold">بررسی و تأیید نقدها</h2>
+
+            <p className="mt-2 text-sm text-muted-foreground">
+              بررسی نقدهای کاربران و تأیید یا رد آن‌ها پیش از انتشار
+            </p>
+          </Link>
+          <Link
+  href="/admin/contributions"
   className="rounded-2xl border bg-card p-5 transition-colors hover:border-orange-500/50"
 >
-  <h2 className="font-bold">بررسی و تأیید نقدها</h2>
+  <h2 className="font-bold">بررسی مشارکت‌های کاربران</h2>
 
   <p className="mt-2 text-sm text-muted-foreground">
-    بررسی نقدهای کاربران و تأیید یا رد آن‌ها پیش از انتشار
+    بررسی اطلاعات پیشنهادی کاربران و تأیید یا رد مشارکت‌ها پیش از انتشار
   </p>
 </Link>
         </section>
