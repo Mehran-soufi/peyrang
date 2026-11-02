@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { PageBreadcrumb } from "../shared/page-breadcrumb";
 
 const contributionTypes = [
   {
@@ -32,7 +33,8 @@ const contributionTypes = [
     icon: BookOpen,
     image: "/assets/images/community/contributions/book-summary.webp",
     fallbackImage: "/assets/images/books/the-blind-owl.webp",
-    desktopPlacement: "lg:col-start-2 lg:row-start-1 lg:col-span-2 lg:row-span-2 lg:min-h-[436px]",
+    desktopPlacement:
+      "lg:col-start-2 lg:row-start-1 lg:col-span-2 lg:row-span-2 lg:min-h-[436px]",
     subjectLabel: "عنوان کتاب",
     subjectPlaceholder: "مثلاً بوف کور",
     contentLabel: "خلاصهٔ کتاب",
@@ -64,8 +66,7 @@ const contributionTypes = [
     subjectLabel: "نام اقتباس و کتاب اصلی",
     subjectPlaceholder: "مثلاً نام فیلم — نام کتاب",
     contentLabel: "دربارهٔ اقتباس",
-    contentPlaceholder:
-      "اطلاعات اقتباس، سازندگان و ارتباطش با کتاب را بنویس.",
+    contentPlaceholder: "اطلاعات اقتباس، سازندگان و ارتباطش با کتاب را بنویس.",
   },
   {
     id: "recommendation",
@@ -78,8 +79,7 @@ const contributionTypes = [
     subjectLabel: "چه چیزی را پیشنهاد می‌کنی؟",
     subjectPlaceholder: "نام کتاب، نویسنده یا اقتباس",
     contentLabel: "دلیل پیشنهاد",
-    contentPlaceholder:
-      "بگو چرا این مورد برای خواننده‌های پی‌رنگ جذاب است.",
+    contentPlaceholder: "بگو چرا این مورد برای خواننده‌های پی‌رنگ جذاب است.",
   },
   {
     id: "correction",
@@ -88,7 +88,7 @@ const contributionTypes = [
     icon: FileText,
     image: "/assets/images/community/contributions/correction.webp",
     fallbackImage: "/assets/images/community/community-cta.webp",
-    desktopPlacement: "lg:col-start-4 lg:row-start-2 lg:min-h-0",
+    desktopPlacement: "lg:col-start-4 lg:row-start-2",
     subjectLabel: "عنوان صفحه یا اثر",
     subjectPlaceholder: "نام کتاب، نویسنده یا اقتباس",
     contentLabel: "اطلاعات فعلی و اصلاح پیشنهادی",
@@ -130,21 +130,7 @@ export function ContributionForm() {
 
   return (
     <div className="mx-auto w-[95%]">
-      <nav aria-label="مسیر راهنما" className="mb-8">
-        <ol className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-          <li>
-            <Link className="transition hover:text-orange-500" href="/">
-              خانه
-            </Link>
-          </li>
-          <li aria-hidden="true">
-            <ChevronLeft className="size-4" />
-          </li>
-          <li aria-current="page" className="font-semibold text-foreground">
-            مشارکت کاربران
-          </li>
-        </ol>
-      </nav>
+      <PageBreadcrumb items={[{ label: "مشارکت کاربران" }]} />
 
       <header className="mb-8 max-w-3xl sm:mb-10">
         <p className="text-sm font-semibold text-orange-500">جامعهٔ پی‌رنگ</p>
@@ -170,53 +156,63 @@ export function ContributionForm() {
           </span>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:auto-rows-52.5 lg:grid-cols-4">
-          {contributionTypes.map(({ id, label, description, icon: Icon, image, fallbackImage, desktopPlacement }) => {
-            const resolvedImage = brokenImages.includes(id)
-              ? fallbackImage
-              : image;
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+          {contributionTypes.map(
+            ({
+              id,
+              label,
+              description,
+              icon: Icon,
+              image,
+              fallbackImage,
+              desktopPlacement,
+            }) => {
+              const resolvedImage = brokenImages.includes(id)
+                ? fallbackImage
+                : image;
 
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => openForm(id)}
-                className={`group relative isolate min-h-72 overflow-hidden rounded-3xl border border-white/10 bg-card text-right shadow-lg shadow-black/10 transition duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-950/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 ${desktopPlacement} ${id === "correction" ? "sm:col-span-2 sm:w-1/2 sm:justify-self-center lg:col-span-1 lg:w-auto" : ""}`}
-              >
-                <Image
-                  src={resolvedImage}
-                  alt=""
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="-z-20 object-cover transition duration-700 group-hover:scale-105"
-                  onError={() => {
-                    if (!brokenImages.includes(id)) {
-                      setBrokenImages((current) => [...current, id]);
-                    }
-                  }}
-                />
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-0 -z-10 bg-linear-to-t from-black via-black/70 to-black/5"
-                />
-                <span className="absolute right-5 top-5 flex size-11 items-center justify-center rounded-2xl border border-white/15 bg-black/30 text-orange-300 backdrop-blur-md">
-                  <Icon className="size-5" />
-                </span>
-                <span className="absolute inset-x-0 bottom-0 block p-5 sm:p-6">
-                  <span className="block text-xl font-black text-white">
-                    {label}
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => openForm(id)}
+                  className={`group relative isolate min-h-72 overflow-hidden rounded-3xl border border-white/10 bg-card text-right shadow-lg shadow-black/10 transition duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-950/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 ${desktopPlacement} ${id === "correction" ? "lg:col-span-1" : ""}`}
+                >
+                  <Image
+                    src={resolvedImage}
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="-z-20 object-cover transition duration-700 group-hover:scale-105"
+                    onError={() => {
+                      if (!brokenImages.includes(id)) {
+                        setBrokenImages((current) => [...current, id]);
+                      }
+                    }}
+                  />
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 -z-10 bg-linear-to-t from-black via-black/70 to-black/5"
+                  />
+                  <span className="absolute right-5 top-5 flex size-11 items-center justify-center rounded-2xl border border-white/15 bg-black/30 text-orange-300 backdrop-blur-md">
+                    <Icon className="size-5" />
                   </span>
-                  <span className="mt-2 block text-sm leading-6 text-white/75">
-                    {description}
+                  <span className="absolute inset-x-0 bottom-0 block p-5 sm:p-6">
+                    <span className="block text-xl font-black text-white">
+                      {label}
+                    </span>
+                    <span className="mt-2 block text-sm leading-6 text-white/75">
+                      {description}
+                    </span>
+                    <span className="mt-5 inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-bold text-white backdrop-blur-md transition group-hover:border-orange-400/60 group-hover:bg-orange-500">
+                      نوشتن مشارکت
+                      <ArrowLeft className="size-3.5" />
+                    </span>
                   </span>
-                  <span className="mt-5 inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-bold text-white backdrop-blur-md transition group-hover:border-orange-400/60 group-hover:bg-orange-500">
-                    نوشتن مشارکت
-                    <ArrowLeft className="size-3.5" />
-                  </span>
-                </span>
-              </button>
-            );
-          })}
+                </button>
+              );
+            },
+          )}
         </div>
 
         <div className="mt-8 flex items-start gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4 text-sm">
@@ -237,7 +233,9 @@ export function ContributionForm() {
             <>
               <DialogHeader className="sr-only">
                 <DialogTitle>{selectedType.label}</DialogTitle>
-                <DialogDescription>{selectedType.description}</DialogDescription>
+                <DialogDescription>
+                  {selectedType.description}
+                </DialogDescription>
               </DialogHeader>
 
               <div className="border-b border-border/60 p-5 sm:p-6">
@@ -328,8 +326,8 @@ export function ContributionForm() {
                     className="m-5 rounded-xl border border-border bg-muted/50 p-4 text-sm leading-6 text-muted-foreground sm:mx-6"
                   >
                     این پیش‌نمایش فرم را نشان می‌دهد؛ هنوز چیزی ذخیره یا ارسال
-                    نمی‌شود. برای دریافت واقعی مشارکت‌ها باید فرم به حساب
-                    کاربری و صف بررسی مدیر متصل شود.
+                    نمی‌شود. برای دریافت واقعی مشارکت‌ها باید فرم به حساب کاربری
+                    و صف بررسی مدیر متصل شود.
                   </p>
                 )}
               </form>

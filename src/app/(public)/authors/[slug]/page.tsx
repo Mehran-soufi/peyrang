@@ -7,6 +7,7 @@ import { ArrowRight, UserRound } from "lucide-react";
 import { BookCard } from "@/components/home/book-card";
 import { getAuthorBySlug } from "@/lib/supabase/queries/catalog";
 import { getPaginatedBooks } from "@/lib/supabase/queries/books";
+import { PageBreadcrumb } from "@/components/shared/page-breadcrumb";
 
 type AuthorPageProps = {
   params: Promise<{ slug: string }>;
@@ -39,17 +40,13 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
 
   return (
     <main className="mx-auto min-h-screen w-[95%] max-w-7xl px-4 pt-20 pb-24 sm:px-6 sm:pt-28 sm:pb-12">
-      <Link
-        href="/authors"
-        className="inline-flex items-center gap-2 rounded-lg text-sm text-muted-foreground transition hover:text-primary"
-      >
-        <ArrowRight className="size-4" aria-hidden="true" />
-        همهٔ نویسندگان
-      </Link>
+      <PageBreadcrumb
+        items={[{ label: "نویسندگان", href: "/authors" }, { label: author.name }]}
+      />
 
       <header className="mt-6 flex flex-col gap-5 rounded-2xl border border-border/60 bg-card/50 p-5 sm:flex-row sm:items-center sm:p-7">
         <div className="relative flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary sm:size-32">
-          {author.featuredImage ?? author.avatarUrl ? (
+          {(author.featuredImage ?? author.avatarUrl) ? (
             <Image
               src={author.featuredImage ?? author.avatarUrl!}
               alt={author.name}
@@ -78,7 +75,9 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                   : ""}
               </span>
             ) : null}
-            <span>{author.bookCount.toLocaleString("fa-IR")} کتاب در پی‌رنگ</span>
+            <span>
+              {author.bookCount.toLocaleString("fa-IR")} کتاب در پی‌رنگ
+            </span>
           </div>
         </div>
       </header>
@@ -116,7 +115,9 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
           </div>
         ) : (
           <div className="rounded-2xl border border-border bg-card px-4 py-12 text-center">
-            <p className="font-semibold">هنوز کتابی برای این نویسنده ثبت نشده است.</p>
+            <p className="font-semibold">
+              هنوز کتابی برای این نویسنده ثبت نشده است.
+            </p>
           </div>
         )}
       </section>

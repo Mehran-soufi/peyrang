@@ -18,7 +18,7 @@ export default async function BookPage({ params }: BookPageProps) {
   }
 
   return (
-    <main className="md:mt-16 mt-13">
+    <main className="pt-24 md:pt-28">
       <BookDetail book={book} />
     </main>
   );

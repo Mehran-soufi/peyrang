@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { AuthorCard } from "@/components/home/author-card";
 import { getAuthors } from "@/lib/supabase/queries/catalog";
+import { PageBreadcrumb } from "@/components/shared/page-breadcrumb";
 
 const AUTHORS_PER_PAGE = 12;
 
@@ -30,6 +31,7 @@ export default async function AuthorsPage({ searchParams }: AuthorsPageProps) {
 
   return (
     <main className="mx-auto min-h-screen w-[95%] max-w-7xl px-4 pt-20 pb-24 sm:px-6 sm:pt-28 sm:pb-12">
+      <PageBreadcrumb items={[{ label: "نویسندگان" }]} />
       <header className="mb-8">
         <p className="text-sm font-semibold text-primary">کتابخانهٔ پی‌رنگ</p>
         <h1 className="mt-2 text-2xl font-extrabold sm:text-3xl">نویسندگان</h1>

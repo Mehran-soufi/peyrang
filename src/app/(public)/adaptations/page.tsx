@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BookOpen, Clapperboard } from "lucide-react";
 
 import { getAdaptations } from "@/lib/supabase/queries/catalog";
+import { PageBreadcrumb } from "@/components/shared/page-breadcrumb";
 
 export const metadata: Metadata = {
   title: "اقتباس‌ها",
@@ -22,6 +23,7 @@ export default async function AdaptationsPage() {
 
   return (
     <main className="mx-auto min-h-screen w-[95%] max-w-7xl px-4 pt-20 pb-24 sm:px-6 sm:pt-28 sm:pb-12">
+     <PageBreadcrumb items={[{ label: "اقتباس ها" }]} />
       <header className="mb-8">
         <p className="text-sm font-semibold text-primary">از کتاب تا پرده</p>
         <h1 className="mt-2 text-2xl font-extrabold sm:text-3xl">اقتباس‌ها</h1>

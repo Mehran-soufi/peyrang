@@ -7,6 +7,7 @@ import {
   getBookFilterOptions,
   getPaginatedBooks,
 } from "@/lib/supabase/queries/books";
+import { PageBreadcrumb } from "@/components/shared/page-breadcrumb";
 
 export const metadata: Metadata = {
   title: "کتاب‌ها",
@@ -102,6 +103,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
 
   return (
     <main className="mx-auto min-h-screen w-[95%] max-w-7xl pt-20 pb-24 sm:pt-28 sm:pb-12">
+      <PageBreadcrumb items={[{ label: "کتاب ها" }]} />
       <header className="mb-8">
         <h1 className="text-2xl font-extrabold sm:text-3xl">کتابخانه پی‌رنگ</h1>
 
