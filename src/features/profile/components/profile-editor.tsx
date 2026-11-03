@@ -82,7 +82,7 @@ export function ProfileEditor({
 
   return (
     <section className="mt-6 rounded-2xl border border-border/60 bg-card/60 p-5 sm:p-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col md:flex-row items-start justify-between gap-4">
         <div>
           <h2 className="font-bold">اطلاعات حساب</h2>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">
