@@ -10,7 +10,7 @@ type AuthCardProps = {
 
 export function AuthCard({ active, children }: AuthCardProps) {
   return (
-    <section className="relative w-full">
+    <section className="relative w-full max-w-md">
       {/* Ambient book atmosphere */}
       <div
         aria-hidden="true"
