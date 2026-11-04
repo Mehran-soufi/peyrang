@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Link from "next/link";
 
 type Adaptation = {
   title: string;
@@ -66,8 +67,8 @@ export function AdaptationSection({
             </p>
           </div>
 
-          <button
-            type="button"
+          <Link
+            href="/adaptations"
             className="
               hidden shrink-0 items-center gap-1.5
               rounded-xl
@@ -87,7 +88,7 @@ export function AdaptationSection({
           >
             <span>{viewAllLabel}</span>
             <ArrowLeft className="size-3.5" />
-          </button>
+          </Link>
         </div>
 
         {/* Adaptations Carousel */}
