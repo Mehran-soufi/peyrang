@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Link from "next/link";
 
 type Book = {
   id: string;
@@ -26,6 +27,7 @@ type BookSectionProps = {
   books: Book[];
   icon?: LucideIcon;
   viewAllLabel?: string;
+  viewAllHref: string;
 };
 
 export function BookSection({
@@ -35,6 +37,7 @@ export function BookSection({
   books,
   icon: Icon = Sparkles,
   viewAllLabel = "مشاهده همه",
+  viewAllHref,
 }: BookSectionProps) {
   return (
     <section
@@ -65,7 +68,8 @@ export function BookSection({
             </p>
           </div>
 
-          <button
+          <Link
+            href={viewAllHref}
             type="button"
             className="
               hidden shrink-0 items-center gap-1.5
@@ -86,7 +90,7 @@ export function BookSection({
           >
             <span>{viewAllLabel}</span>
             <ArrowLeft className="size-3.5" />
-          </button>
+          </Link>
         </div>
 
         {/* Books Carousel */}
@@ -134,27 +138,27 @@ export function BookSection({
 
         {/* Mobile View All */}
         <div className="mt-6 flex justify-center sm:hidden">
-          <button
-            type="button"
+          <Link
+            href={viewAllHref}
             className="
-              inline-flex items-center gap-1.5
-              rounded-xl
-              border border-border/60
-              bg-background/60
-              px-4 py-2.5
-              text-xs font-semibold
-              text-muted-foreground
-              shadow-sm
-              backdrop-blur-sm
-              transition-all
-              hover:border-primary/30
-              hover:bg-primary/5
-              hover:text-primary
-            "
+    inline-flex items-center gap-1.5
+    rounded-xl
+    border border-border/60
+    bg-background/60
+    px-4 py-2.5
+    text-xs font-semibold
+    text-muted-foreground
+    shadow-sm
+    backdrop-blur-sm
+    transition-all
+    hover:border-primary/30
+    hover:bg-primary/5
+    hover:text-primary
+  "
           >
             <span>{viewAllLabel} کتاب‌ها</span>
             <ArrowLeft className="size-3.5" />
-          </button>
+          </Link>
         </div>
       </div>
     </section>

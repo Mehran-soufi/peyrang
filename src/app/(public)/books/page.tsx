@@ -29,6 +29,7 @@ type BooksPageProps = {
 
 const validSortOptions = [
   "newest",
+  "popular",
   "highest_rating",
   "most_rated",
   "alphabetical",

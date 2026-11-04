@@ -183,19 +183,19 @@ async function fetchSimilarBooks(
   const candidateLookups = await Promise.all([
     genreIds.length
       ? supabase
-          .from("book_genres")
-          .select("book_id")
-          .in("genre_id", genreIds)
-          .neq("book_id", currentBook.id)
-          .limit(250)
+        .from("book_genres")
+        .select("book_id")
+        .in("genre_id", genreIds)
+        .neq("book_id", currentBook.id)
+        .limit(250)
       : Promise.resolve({ data: [], error: null }),
     authorIds.length
       ? supabase
-          .from("book_authors")
-          .select("book_id")
-          .in("author_id", authorIds)
-          .neq("book_id", currentBook.id)
-          .limit(250)
+        .from("book_authors")
+        .select("book_id")
+        .in("author_id", authorIds)
+        .neq("book_id", currentBook.id)
+        .limit(250)
       : Promise.resolve({ data: [], error: null }),
   ]);
 
@@ -294,7 +294,12 @@ export const getSimilarBooks = unstable_cache(
 
 export type PaginatedBooksParams = {
   query?: string;
-  sortBy?: "newest" | "highest_rating" | "most_rated" | "alphabetical";
+  sortBy?:
+  | "newest"
+  | "popular"
+  | "highest_rating"
+  | "most_rated"
+  | "alphabetical";
   genreSlug?: string;
   authorSlug?: string;
   language?: string;
@@ -335,32 +340,32 @@ async function fetchPaginatedBooks(
     throw new Error(`Failed to fetch paginated books: ${error.message}`);
   }
 
-const books: BookListItem[] = (data ?? []).map(
-  (book: {
-    id: string;
-    title: string;
-    slug: string;
-    cover: string | null;
-    author: string;
-    publication_year: number | null;
-    language: string | null;
-    genres: string[] | null;
-    rating_average: number | null;
-    rating_count: number;
-    total_count: number;
-  }) => ({
-    id: book.id,
-    title: book.title,
-    slug: book.slug,
-    cover: book.cover,
-    author: book.author,
-    publicationYear: book.publication_year,
-    language: book.language,
-    genres: book.genres ?? [],
-    ratingAverage: book.rating_average,
-    ratingCount: Number(book.rating_count),
-  }),
-);
+  const books: BookListItem[] = (data ?? []).map(
+    (book: {
+      id: string;
+      title: string;
+      slug: string;
+      cover: string | null;
+      author: string;
+      publication_year: number | null;
+      language: string | null;
+      genres: string[] | null;
+      rating_average: number | null;
+      rating_count: number;
+      total_count: number;
+    }) => ({
+      id: book.id,
+      title: book.title,
+      slug: book.slug,
+      cover: book.cover,
+      author: book.author,
+      publicationYear: book.publication_year,
+      language: book.language,
+      genres: book.genres ?? [],
+      ratingAverage: book.rating_average,
+      ratingCount: Number(book.rating_count),
+    }),
+  );
 
   return {
     books,

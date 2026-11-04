@@ -25,6 +25,7 @@ const newReleases = books.slice(0, 10).map((book) => ({
       description="کتاب‌هایی که به‌تازگی به مجموعه پی‌رنگ اضافه شده‌اند"
       books={newReleases}
       icon={BookOpen}
+      viewAllHref="/books?sort=newest"
     />
   );
 }

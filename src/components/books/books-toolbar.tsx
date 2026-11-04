@@ -28,6 +28,7 @@ type BooksToolbarProps = {
 
 const sortOptions = [
   { value: "newest", label: "جدیدترین" },
+  { value: "popular", label: "محبوب‌ترین" },
   { value: "highest_rating", label: "بالاترین امتیاز" },
   { value: "most_rated", label: "بیشترین رأی" },
   { value: "alphabetical", label: "ترتیب الفبایی" },

@@ -21,6 +21,7 @@ export async function PopularBooks() {
       description="محبوب‌ترین کتاب‌ها بر اساس امتیاز و مشارکت کاربران پی‌رنگ"
       books={popularBooks}
       icon={Sparkles}
+      viewAllHref="/books?sort=popular"
     />
   );
 }
