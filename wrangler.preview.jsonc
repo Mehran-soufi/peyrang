@@ -3,7 +3,9 @@
   "name": "peyrang-preview",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-10-28",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "workers_dev": true,
   "kv_namespaces": [
     {
@@ -28,9 +30,14 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["DOQueueHandler"]
+      "new_sqlite_classes": [
+        "DOQueueHandler"
+      ]
     }
   ],
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://peyrang-preview.mehransoufi33.workers.dev"
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"

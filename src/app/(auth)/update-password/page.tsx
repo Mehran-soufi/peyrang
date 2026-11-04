@@ -98,7 +98,7 @@ export default function UpdatePasswordPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-12">
+    <main className="flex min-h-dvh items-center justify-center px-4 py-8 sm:py-12 overflow-x-hidden">
       <AuthCard>
         <div>
           <div className="mb-6 space-y-1.5">
