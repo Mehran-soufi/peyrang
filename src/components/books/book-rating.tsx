@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
+import Link from "next/link";
 
 type BookRatingProps = {
   bookId: string;
@@ -522,28 +523,37 @@ export function BookRating({ bookId, mode }: BookRatingProps) {
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-3">
-                         <div className="flex min-w-0 items-center gap-2">
-  {reviewAuthors[review.user_id]?.avatar_url ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={reviewAuthors[review.user_id].avatar_url!}
-      alt=""
-      className="size-9 shrink-0 rounded-full border border-border/60 object-cover"
-    />
-  ) : (
-    <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-orange-500/10 text-sm font-bold text-orange-600">
-      {(reviewAuthors[review.user_id]?.display_name ||
-        reviewAuthors[review.user_id]?.username ||
-        "ک")[0].toLocaleUpperCase("fa-IR")}
-    </div>
-  )}
+                          <div className="flex min-w-0 items-center gap-2">
+                            {reviewAuthors[review.user_id]?.avatar_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={reviewAuthors[review.user_id].avatar_url!}
+                                alt=""
+                                className="size-9 shrink-0 rounded-full border border-border/60 object-cover"
+                              />
+                            ) : (
+                              <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-orange-500/10 text-sm font-bold text-orange-600">
+                                {(reviewAuthors[review.user_id]?.display_name ||
+                                  reviewAuthors[review.user_id]?.username ||
+                                  "ک")[0].toLocaleUpperCase("fa-IR")}
+                              </div>
+                            )}
 
-  <p className="truncate text-sm font-bold">
-    {reviewAuthors[review.user_id]?.display_name ||
-      reviewAuthors[review.user_id]?.username ||
-      "کاربر پی‌رنگ"}
-  </p>
-</div>
+                            {reviewAuthors[review.user_id]?.username ? (
+                              <Link
+                                href={`/profile/${reviewAuthors[review.user_id].username}`}
+                                className="truncate text-sm font-bold transition-colors hover:text-primary"
+                              >
+                                {reviewAuthors[review.user_id]?.display_name ||
+                                  reviewAuthors[review.user_id]?.username}
+                              </Link>
+                            ) : (
+                              <p className="truncate text-sm font-bold">
+                                {reviewAuthors[review.user_id]?.display_name ||
+                                  "کاربر پی‌رنگ"}
+                              </p>
+                            )}
+                          </div>
 
                           {(() => {
                             const reviewRating = ratings.find(

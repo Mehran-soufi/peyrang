@@ -22,7 +22,9 @@ export default async function ProfilePage() {
     await Promise.all([
       supabase
         .from("profiles")
-        .select("username, display_name, avatar_url, bio, role, created_at")
+        .select(
+          "username, display_name, avatar_url, bio, role, created_at, is_public, show_reviews, show_favorites",
+        )
         .eq("id", user.id)
         .maybeSingle(),
       getMyReviews(user.id),
@@ -86,6 +88,9 @@ export default async function ProfilePage() {
         bio={profile?.bio ?? ""}
         email={user.email ?? ""}
         createdAt={profile?.created_at ?? user.created_at}
+        isPublic={profile?.is_public ?? false}
+        showReviews={profile?.show_reviews ?? true}
+        showFavorites={profile?.show_favorites ?? true}
       />
 
       <ProfileDashboard reviews={reviews} favorites={favorites} />

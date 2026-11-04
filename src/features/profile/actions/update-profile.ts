@@ -15,6 +15,9 @@ export async function updateProfile(
 
     const displayName = String(formData.get("displayName") ?? "").trim();
     const bio = String(formData.get("bio") ?? "").trim();
+    const isPublic = formData.get("isPublic") === "on";
+    const showReviews = formData.get("showReviews") === "on";
+    const showFavorites = formData.get("showFavorites") === "on";
     const avatar = formData.get("avatar");
 
     const fieldErrors: NonNullable<
@@ -106,11 +109,17 @@ export async function updateProfile(
         username: string;
         display_name: string | null;
         bio: string | null;
+        is_public: boolean;
+        show_reviews: boolean;
+        show_favorites: boolean;
         avatar_url?: string;
     } = {
         username,
         display_name: displayName || null,
         bio: bio || null,
+        is_public: isPublic,
+        show_reviews: showReviews,
+        show_favorites: showFavorites,
     };
 
     if (avatarUrl) {

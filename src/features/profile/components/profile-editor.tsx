@@ -15,6 +15,9 @@ type ProfileEditorProps = {
   bio: string;
   email: string;
   createdAt: string;
+  isPublic: boolean;
+  showReviews: boolean;
+  showFavorites: boolean;
 };
 
 export function ProfileEditor({
@@ -24,6 +27,9 @@ export function ProfileEditor({
   bio,
   email,
   createdAt,
+  isPublic,
+  showReviews,
+  showFavorites,
 }: ProfileEditorProps) {
   const router = useRouter();
 
@@ -237,7 +243,53 @@ export function ProfileEditor({
               </p>
             ))}
           </div>
+          <div className="space-y-4 border-t pt-5">
+            <div>
+              <h3 className="font-semibold">حریم خصوصی پروفایل</h3>
+              <p className="mt-1 text-xs leading-6 text-muted-foreground">
+                مشخص کن دیگران چه بخش‌هایی از پروفایلت را ببینند.
+              </p>
+            </div>
 
+            <label className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                name="isPublic"
+                defaultChecked={isPublic}
+                disabled={pending}
+                className="mt-1 size-4 accent-primary"
+              />
+              <span>
+                <span className="block text-sm font-medium">پروفایل عمومی</span>
+                <span className="text-xs text-muted-foreground">
+                  با فعال‌کردن این گزینه، دیگران و مهمان‌ها می‌توانند صفحه
+                  پروفایلت را ببینند.
+                </span>
+              </span>
+            </label>
+
+            <label className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                name="showReviews"
+                defaultChecked={showReviews}
+                disabled={pending}
+                className="mt-1 size-4 accent-primary"
+              />
+              <span className="text-sm">نمایش نقدهای تأییدشده</span>
+            </label>
+
+            <label className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                name="showFavorites"
+                defaultChecked={showFavorites}
+                disabled={pending}
+                className="mt-1 size-4 accent-primary"
+              />
+              <span className="text-sm">نمایش کتاب‌های محبوب</span>
+            </label>
+          </div>
           <div className="flex flex-wrap gap-3 border-t pt-4">
             <button
               type="submit"
