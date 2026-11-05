@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { CalendarDays, UserRound } from "lucide-react";
+import { CalendarDays, UserRound, LockKeyhole } from "lucide-react";
 
 import { PublicProfileDashboard } from "@/features/profile/components/public-profile-dashboard";
 import {
@@ -24,14 +24,18 @@ export default async function PublicProfilePage({
     notFound();
   }
 
-  const [reviews, favorites] = await Promise.all([
-    profile.show_reviews
-      ? getPublicProfileReviews(profile.id)
-      : Promise.resolve([]),
-    profile.show_favorites
-      ? getPublicProfileFavorites(profile.id)
-      : Promise.resolve([]),
-  ]);
+  const isPublic = profile.is_public;
+
+  const [reviews, favorites] = isPublic
+    ? await Promise.all([
+        profile.show_reviews
+          ? getPublicProfileReviews(profile.id)
+          : Promise.resolve([]),
+        profile.show_favorites
+          ? getPublicProfileFavorites(profile.id)
+          : Promise.resolve([]),
+      ])
+    : [[], []];
 
   const displayName = profile.display_name || profile.username;
 
@@ -65,27 +69,45 @@ export default async function PublicProfilePage({
               </p>
             )}
 
-            {profile.bio && (
+            {isPublic && profile.bio && (
               <p className="mt-4 whitespace-pre-wrap text-sm leading-8 text-muted-foreground">
                 {profile.bio}
               </p>
             )}
 
-            <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-              <CalendarDays className="size-4" />
-              عضویت از{" "}
-              {new Date(profile.created_at).toLocaleDateString("fa-IR")}
-            </div>
+            {isPublic && profile.created_at && (
+              <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                <CalendarDays className="size-4" />
+                عضویت از{" "}
+                {new Date(profile.created_at).toLocaleDateString("fa-IR")}
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      <PublicProfileDashboard
-        reviews={reviews}
-        favorites={favorites}
-        showReviews={profile.show_reviews}
-        showFavorites={profile.show_favorites}
-      />
+      {isPublic ? (
+        <PublicProfileDashboard
+          reviews={reviews}
+          favorites={favorites}
+          showReviews={profile.show_reviews}
+          showFavorites={profile.show_favorites}
+        />
+      ) : (
+        <section className="flex flex-col items-center justify-center rounded-3xl border bg-card/40 px-6 py-12 text-center">
+          <div className="mb-4 flex size-14 items-center justify-center rounded-full bg-muted">
+            <LockKeyhole className="size-6 text-muted-foreground" />
+          </div>
+
+          <h2 className="text-lg font-semibold">
+            این حساب خصوصی است
+          </h2>
+
+          <p className="mt-2 max-w-md text-sm leading-7 text-muted-foreground">
+            اطلاعات این حساب بنابر درخواست صاحب آن خصوصی است.
+          </p>
+        </section>
+      )}
     </main>
   );
 }
